@@ -56,7 +56,8 @@
     if (standalone) { toast("You're already using the app."); return; }
     if (inApp && !manual) return;
     const m = mode();
-    if (!manual && m === "menu" && !android) return; /* desktop without one-tap install: don't nag */
+    /* pop up on its own only when the browser can install in one tap (or on iPhone Safari) */
+    if (!manual && m !== "prompt" && !ios) return;
     el.dataset.mode = m; hint("");
     el.hidden = false; requestAnimationFrame(() => el.classList.add("show")); root.classList.add("xp-open"); sfx.open();
     setTimeout(() => { const f = fine ? el.querySelector(".xp-go") : el.querySelector(".xp-card"); if (f) f.focus({ preventScroll: true }); }, 260);
@@ -80,7 +81,9 @@
   go.addEventListener("click", async () => {
     sfx.pop();
     if (!ios) {
-      go.disabled = true; const p = await waitForPrompt(deferred ? 0 : 1500); go.disabled = false;
+      /* inside Instagram / WhatsApp / Facebook's built-in browser nothing can be installed: reopen in Chrome */
+      if (android && inApp) { location.href = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.href)};end`; return; }
+      go.disabled = true; go.classList.add("wait"); const p = await waitForPrompt(deferred ? 0 : 4000); go.disabled = false; go.classList.remove("wait");
       if (p) {
         p.prompt();
         const r = await p.userChoice.catch(() => ({}));
@@ -88,7 +91,8 @@
         if (r && r.outcome === "accepted") { ls.set(DONE, "1"); hide(); } else hide(true);
         return;
       }
-      hint(`Your browser installs apps from its menu: tap <b>⋮</b> at the top, then <b>Install app</b>.`);
+      if (await installed()) { hide(); toast("It's already on this phone. Open <b>Sir X English</b> from your home screen."); ls.set(DONE, "1"); return; }
+      hint(`This browser doesn't allow one-tap installs. Open the site in <b>Chrome</b> and tap Install again.`);
       return;
     }
     /* iPhone / iPad: Apple only allows installing from the Share menu, so the button opens it directly */
@@ -97,6 +101,12 @@
       hint(`In the menu that opened, tap <b>Add to Home Screen</b>.`);
     } else hint(`Tap <b>Share</b> in Safari, then <b>Add to Home Screen</b>.`);
   });
+
+  async function installed() {
+    try { if (navigator.getInstalledRelatedApps) { const r = await navigator.getInstalledRelatedApps(); return r.length > 0; } } catch (e) {}
+    return !!ls.get(DONE);
+  }
+  if (navigator.getInstalledRelatedApps) installed().then(v => { if (v) { ls.set(DONE, "1"); root.classList.add("app-installed"); } });
 
   /* any element with data-install opens it on demand (footer "Get the app" link) */
   d.addEventListener("click", e => { const t = e.target.closest("[data-install]"); if (t) { e.preventDefault(); show(true); } });

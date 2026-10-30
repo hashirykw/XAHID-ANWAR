@@ -24,7 +24,9 @@
 .xp-pts svg{width:14px;height:14px;color:#1F8A4C;flex:none}
 .xp-do{display:grid;gap:10px}
 .xp-do .btn{width:100%;--h:56px;font-size:1.02rem}
-.xp-do .btn:disabled{opacity:.7}
+.xp-do .btn:disabled{opacity:.85;cursor:progress}
+.xp-do .btn.wait .btn-i svg{animation:xpSpin 1s linear infinite}
+@keyframes xpSpin{to{transform:rotate(360deg)}}
 .xp-hint{display:block;text-align:center;padding:10px 12px;border-radius:12px;background:#fff;border:1px dashed rgba(217,68,15,.4);font-size:.88rem;line-height:1.4;animation:xpHint .4s var(--ease-o)}
 .xp-hint[hidden]{display:none}
 .xp-hint b{color:var(--ember-deep)}
