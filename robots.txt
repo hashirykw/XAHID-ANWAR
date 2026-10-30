@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /practice/
+
+Sitemap: https://xahid-anwar.nexlyr.solutions/sitemap.xml

@@ -91,7 +91,7 @@ p{margin:0}
 .lock svg{width:13px;height:13px}
 
 /* ---------- nav (floating glass pill) ---------- */
-.nav{position:fixed;top:14px;left:0;right:0;z-index:50;padding:0 var(--gut);pointer-events:none}
+.nav{position:fixed;top:max(14px,calc(env(safe-area-inset-top) + 8px));left:0;right:0;z-index:50;padding:0 var(--gut);pointer-events:none}
 .nav-pill{pointer-events:auto;max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;height:64px;padding:0 8px 0 10px;border-radius:22px;color:var(--bone-2);transition:height .3s var(--ease)}
 .nav-pill.glass{background:linear-gradient(145deg,rgba(40,31,25,.55),rgba(26,20,16,.38))}
 .nav.scrolled .nav-pill{height:58px}
@@ -171,7 +171,7 @@ p{margin:0}
 @media (max-width:700px){.ribbons{height:92px;margin-top:-46px;margin-bottom:-46px}.ribbon-ink{top:calc(50% + 14px);transform:translateY(-50%) rotate(-3deg)}.ribbon-ember{top:calc(50% - 14px);transform:translateY(-50%) rotate(2.4deg)}}
 
 /* ---------- inner page hero ---------- */
-.page-hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;padding:136px 0 92px}
+.page-hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;padding:calc(136px + env(safe-area-inset-top)) 0 92px}
 .page-hero::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.22;mix-blend-mode:multiply;z-index:-1}
 .page-hero::after{content:"";position:absolute;width:720px;height:720px;right:-220px;top:-200px;border-radius:50%;background:radial-gradient(circle,var(--ember-glow),transparent 65%);z-index:-1}
 .page-hero .wrap{display:grid;gap:20px;position:relative;justify-items:start}

@@ -1,0 +1,33 @@
+{
+  "id": "/",
+  "name": "Sir Xahid Anwar · O Level & IGCSE English",
+  "short_name": "Sir X English",
+  "description": "O Level and IGCSE English Language with Sir Xahid Anwar: past papers on the clock, AI paper checking, the student portal and the Reading and Writing Handbooks.",
+  "lang": "en-PK",
+  "dir": "ltr",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#D9440F",
+  "theme_color": "#D9440F",
+  "categories": ["education"],
+  "icons": [
+    { "src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "/assets/img/app/m-home.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "Home: Read. Write. Repeat." },
+    { "src": "/assets/img/app/m-pastpapers.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "Past papers with a timed exam mode" },
+    { "src": "/assets/img/app/m-books.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "The Reading and Writing Handbooks" },
+    { "src": "/assets/img/app/d-home.jpg", "sizes": "1280x800", "type": "image/jpeg", "form_factor": "wide", "label": "Sir Xahid Anwar's digital campus" }
+  ],
+  "shortcuts": [
+    { "name": "Past papers", "short_name": "Papers", "url": "/past-papers?source=app", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "AI paper checker", "short_name": "AI Checker", "url": "/ai-checker?source=app", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Student portal", "short_name": "Portal", "url": "/portal?source=app", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Order the handbooks", "short_name": "Books", "url": "/books?source=app", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
