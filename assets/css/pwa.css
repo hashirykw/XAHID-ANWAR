@@ -22,16 +22,14 @@
 .xp-pts{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .xp-pts li{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9px;background:#fff;border:1px solid rgba(26,20,16,.08);font-size:.8rem;font-weight:600}
 .xp-pts svg{width:14px;height:14px;color:#1F8A4C;flex:none}
-.xp-do .btn{width:100%}
-.xp-steps{list-style:none;margin:0;padding:12px;display:grid;gap:10px;border-radius:16px;background:#fff;border:1px solid rgba(26,20,16,.08)}
-.xp-steps li{display:flex;align-items:center;gap:12px;font-size:.9rem;line-height:1.4}
-.xp-n{width:26px;height:26px;flex:none;display:grid;place-items:center;border-radius:8px;background:var(--ink);color:var(--bone-2);font-family:var(--display);font-weight:700;font-size:.78rem}
-.xp-g{display:inline-grid;place-items:center;width:26px;height:26px;margin-left:2px;vertical-align:middle;border-radius:7px;background:rgba(46,42,126,.08);color:#2E6BD9}
-.xp-g svg{width:16px;height:16px}
-.xp [data-mode]{display:none}
-.xp[data-mode="prompt"] [data-mode="prompt"],.xp[data-mode="ios"] [data-mode="ios"],.xp[data-mode="menu"] [data-mode="menu"]{display:grid}
+.xp-do{display:grid;gap:10px}
+.xp-do .btn{width:100%;--h:56px;font-size:1.02rem}
+.xp-do .btn:disabled{opacity:.7}
+.xp-hint{display:block;text-align:center;padding:10px 12px;border-radius:12px;background:#fff;border:1px dashed rgba(217,68,15,.4);font-size:.88rem;line-height:1.4;animation:xpHint .4s var(--ease-o)}
+.xp-hint[hidden]{display:none}
+.xp-hint b{color:var(--ember-deep)}
+@keyframes xpHint{from{opacity:0;transform:translateY(-4px)}}
 .xp-later{justify-self:center;border:0;background:none;padding:6px 10px;font-weight:600;font-size:.86rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
-.xp-arrow{display:none}
 
 /* phones: a bottom sheet over a dimmed page, above the chat button */
 @media (max-width:640px){
@@ -39,9 +37,6 @@
   .xp.show{background:rgba(26,20,16,.45);pointer-events:auto}
   .xp-card{width:100%;border-radius:26px 26px 0 0;padding:22px 20px max(16px,env(safe-area-inset-bottom));transform:translateY(100%);transform-origin:bottom center}
   .xp-card::before,.xp-card::after{border-radius:26px 26px 0 0}
-  /* iPhone Safari: a little arrow pointing at the Share button */
-  .xp.ios-arrow .xp-card{border-radius:26px;margin:0 12px calc(max(12px,env(safe-area-inset-bottom)) + 14px);width:calc(100% - 24px)}
-  .xp.ios-arrow .xp-arrow{display:block;position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;background:#F5EEE3;transform:rotate(45deg);border-radius:0 0 4px 0}
 }
 html.xp-open body{overflow:hidden}
 @media (min-width:641px){html.xp-open body{overflow:auto}}

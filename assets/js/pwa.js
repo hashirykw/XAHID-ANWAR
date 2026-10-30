@@ -20,6 +20,7 @@
   const android = /Android/.test(ua);
   const inApp = /FBAN|FBAV|Instagram|Line\/|Snapchat|TikTok|WhatsApp/i.test(ua);
   const mobile = ios || android || matchMedia("(pointer:coarse)").matches;
+  const fine = matchMedia("(pointer:fine)").matches;
   if (standalone) { root.classList.add("is-app"); ls.set(DONE, "1"); }
 
   let deferred = null;
@@ -29,9 +30,6 @@
   const css = d.createElement("link"); css.rel = "stylesheet"; css.href = "/assets/css/pwa.css"; d.head.appendChild(css);
 
   /* ---------- markup ---------- */
-  const shareIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
-  const plusIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>';
-  const dotsIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
   const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
   const el = d.createElement("div");
   el.className = "xp"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "false"); el.setAttribute("aria-labelledby", "xpTitle"); el.hidden = true;
@@ -44,21 +42,11 @@
       </div>
       <p class="xp-lede">Put Sir Xahid's English on your home screen. It opens full screen like an app, with past papers, the portal and the AI checker one tap away.</p>
       <ul class="xp-pts"><li>${tick}Opens full screen</li><li>${tick}Loads fast, even on weak signal</li><li>${tick}Takes almost no space</li></ul>
-      <div class="xp-do" data-mode="prompt">
+      <div class="xp-do">
         <button type="button" class="btn btn-ember xp-go" data-sfx="none">Install the app</button>
+        <p class="xp-hint" aria-live="polite" hidden></p>
       </div>
-      <ol class="xp-steps" data-mode="ios">
-        <li><span class="xp-n">1</span><span>Tap <b>Share</b> <i class="xp-g">${shareIcon}</i> at the ${/iPad/.test(ua) ? "top" : "bottom"} of Safari</span></li>
-        <li><span class="xp-n">2</span><span>Scroll and tap <b>Add to Home Screen</b> <i class="xp-g">${plusIcon}</i></span></li>
-        <li><span class="xp-n">3</span><span>Tap <b>Add</b>. Sir X English appears with your apps.</span></li>
-      </ol>
-      <ol class="xp-steps" data-mode="menu">
-        <li><span class="xp-n">1</span><span>Open your browser menu <i class="xp-g">${dotsIcon}</i></span></li>
-        <li><span class="xp-n">2</span><span>Tap <b>Install app</b> or <b>Add to Home screen</b></span></li>
-        <li><span class="xp-n">3</span><span>Confirm, and Sir X English appears with your apps.</span></li>
-      </ol>
       <button type="button" class="xp-later" data-sfx="none">Not now</button>
-      <span class="xp-arrow" aria-hidden="true"></span>
     </div>`;
   const tst = d.createElement("div"); tst.className = "xp-toast"; tst.setAttribute("role", "status");
   d.body.append(el, tst);
@@ -69,9 +57,9 @@
     if (inApp && !manual) return;
     const m = mode();
     if (!manual && m === "menu" && !android) return; /* desktop without one-tap install: don't nag */
-    el.dataset.mode = m; el.classList.toggle("ios-arrow", m === "ios" && !/iPad/.test(ua));
+    el.dataset.mode = m; hint("");
     el.hidden = false; requestAnimationFrame(() => el.classList.add("show")); root.classList.add("xp-open"); sfx.open();
-    setTimeout(() => { const f = m === "prompt" ? el.querySelector(".xp-go") : el.querySelector(".xp-card"); if (f) f.focus({ preventScroll: true }); }, 260);
+    setTimeout(() => { const f = fine ? el.querySelector(".xp-go") : el.querySelector(".xp-card"); if (f) f.focus({ preventScroll: true }); }, 260);
   }
   function hide(remember) {
     if (el.hidden) return; el.classList.remove("show"); root.classList.remove("xp-open");
@@ -84,12 +72,30 @@
   el.querySelector(".xp-later").addEventListener("click", () => hide(true));
   el.addEventListener("click", e => { if (e.target === el) hide(true); });
   addEventListener("keydown", e => { if (e.key === "Escape" && !el.hidden) hide(true); });
-  el.querySelector(".xp-go").addEventListener("click", async () => {
-    if (!deferred) { el.dataset.mode = ios ? "ios" : "menu"; return; }
-    deferred.prompt();
-    const r = await deferred.userChoice.catch(() => ({}));
-    deferred = null; root.classList.remove("can-install");
-    if (r && r.outcome === "accepted") { ls.set(DONE, "1"); hide(); } else hide(true);
+  const hintEl = el.querySelector(".xp-hint");
+  function hint(html) { hintEl.innerHTML = html; hintEl.hidden = !html; }
+  /* Chrome sometimes hands over the install prompt a moment after the page opens: wait briefly for it */
+  const waitForPrompt = ms => new Promise(res => { if (deferred) return res(deferred); const t0 = Date.now(); const iv = setInterval(() => { if (deferred || Date.now() - t0 > ms) { clearInterval(iv); res(deferred); } }, 100); });
+  const go = el.querySelector(".xp-go");
+  go.addEventListener("click", async () => {
+    sfx.pop();
+    if (!ios) {
+      go.disabled = true; const p = await waitForPrompt(deferred ? 0 : 1500); go.disabled = false;
+      if (p) {
+        p.prompt();
+        const r = await p.userChoice.catch(() => ({}));
+        deferred = null; root.classList.remove("can-install");
+        if (r && r.outcome === "accepted") { ls.set(DONE, "1"); hide(); } else hide(true);
+        return;
+      }
+      hint(`Your browser installs apps from its menu: tap <b>⋮</b> at the top, then <b>Install app</b>.`);
+      return;
+    }
+    /* iPhone / iPad: Apple only allows installing from the Share menu, so the button opens it directly */
+    if (navigator.share) {
+      try { await navigator.share({ title: "Sir X English", url: location.origin + "/" }); } catch (e) {}
+      hint(`In the menu that opened, tap <b>Add to Home Screen</b>.`);
+    } else hint(`Tap <b>Share</b> in Safari, then <b>Add to Home Screen</b>.`);
   });
 
   /* any element with data-install opens it on demand (footer "Get the app" link) */
