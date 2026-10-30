@@ -98,6 +98,12 @@
   XA.form(document.getElementById("loginForm"), { id: v => /^xa-?\d{3,}$/i.test(v.trim()), pw: v => v.length >= 4 },
     f => { const s = { id: f.id.trim().toUpperCase(), name: "Student", demo: false }; set(s); show(s); });
   document.getElementById("demoBtn").addEventListener("click", () => { const s = { id: "XA-0001", name: "Ayesha Khan", demo: true }; set(s); XA.sfx.success(); show(s); });
-  document.getElementById("signOut").addEventListener("click", () => { set(null); show(null); scrollTo(0, 0); });
+  const so = document.getElementById("signOut"), soB = so.querySelector("b"), soS = so.querySelector("small"); let soT = null;
+  function soReset() { so.classList.remove("confirm"); soB.textContent = "Sign out"; soS.textContent = "On this device"; }
+  so.addEventListener("click", () => {
+    /* first tap asks, second tap signs out, so nobody gets logged out by a stray tap */
+    if (!so.classList.contains("confirm")) { so.classList.add("confirm"); soB.textContent = "Tap again"; soS.textContent = "to sign out"; XA.sfx.pop(); clearTimeout(soT); soT = setTimeout(soReset, 3500); return; }
+    clearTimeout(soT); soReset(); set(null); show(null); scrollTo(0, 0); XA.sfx.close();
+  });
   show(get());
 })();
