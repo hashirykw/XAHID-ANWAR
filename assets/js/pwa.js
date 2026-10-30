@@ -25,7 +25,7 @@
 
   let deferred = null;
   addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; root.classList.add("can-install"); schedule(); });
-  addEventListener("appinstalled", () => { ls.set(DONE, "1"); deferred = null; hide(); toast("Installed. Find <b>Sir X English</b> on your home screen."); sfx.success(); });
+  addEventListener("appinstalled", () => { ls.set(DONE, "1"); deferred = null; hide(); toast("Installed. Find <b>SXA</b> on your home screen."); sfx.success(); });
 
   const css = d.createElement("link"); css.rel = "stylesheet"; css.href = "/assets/css/pwa.css"; d.head.appendChild(css);
 
@@ -38,7 +38,7 @@
       <button type="button" class="xp-x" aria-label="Not now" data-sfx="none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="xp-top">
         <img class="xp-icon" src="/assets/img/icon-192.png" alt="" width="64" height="64">
-        <div><p class="xp-kick">Free · no app store needed</p><h3 id="xpTitle">Get the Sir X app</h3></div>
+        <div><p class="xp-kick">Free · no app store needed</p><h3 id="xpTitle">Get the SXA app</h3></div>
       </div>
       <p class="xp-lede">Put Sir Xahid's English on your home screen. It opens full screen like an app, with past papers, the portal and the AI checker one tap away.</p>
       <ul class="xp-pts"><li>${tick}Opens full screen</li><li>${tick}Loads fast, even on weak signal</li><li>${tick}Takes almost no space</li></ul>
@@ -91,13 +91,13 @@
         if (r && r.outcome === "accepted") { ls.set(DONE, "1"); hide(); } else hide(true);
         return;
       }
-      if (await installed()) { hide(); toast("It's already on this phone. Open <b>Sir X English</b> from your home screen."); ls.set(DONE, "1"); return; }
+      if (await installed()) { hide(); toast("It's already on this phone. Open <b>SXA</b> from your home screen."); ls.set(DONE, "1"); return; }
       hint(`This browser doesn't allow one-tap installs. Open the site in <b>Chrome</b> and tap Install again.`);
       return;
     }
     /* iPhone / iPad: Apple only allows installing from the Share menu, so the button opens it directly */
     if (navigator.share) {
-      try { await navigator.share({ title: "Sir X English", url: location.origin + "/" }); } catch (e) {}
+      try { await navigator.share({ title: "SXA", url: location.origin + "/" }); } catch (e) {}
       hint(`In the menu that opened, tap <b>Add to Home Screen</b>.`);
     } else hint(`Tap <b>Share</b> in Safari, then <b>Add to Home Screen</b>.`);
   });
