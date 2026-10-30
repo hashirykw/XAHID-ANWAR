@@ -74,13 +74,52 @@
   document.getElementById("wordEg").textContent = w[2];
 
   /* registration → WhatsApp */
+  /* registration: new students go to WhatsApp; students already at a campus upload a fee card / slip */
   const form = document.getElementById("regForm");
+  const existing = () => (form.querySelector("input[name=status]:checked") || {}).value === "Already at a campus";
+  const WA_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg>';
+  const UP_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M6 11l6-6 6 6"/></svg>';
+  function mode() {
+    const ex = existing(), last = form.querySelector(".fstep:last-child");
+    form.querySelectorAll("[data-for]").forEach(el => { el.hidden = el.dataset.for !== (ex ? "existing" : "new"); });
+    last.dataset.title = ex ? "Slip" : "Extras";
+    ex ? last.removeAttribute("data-optional") : last.setAttribute("data-optional", "");
+    const lab = form.querySelector('.fs-bar li:last-child small'); if (lab) lab.textContent = last.dataset.title;
+    const nm = form.querySelector(".fs-name"); if (nm && last.classList.contains("on")) nm.textContent = last.dataset.title;
+    const btn = form.querySelector("[type=submit]"), label = ex ? "Send my fee slip" : "Send on WhatsApp";
+    btn.querySelectorAll(".btn-l>span").forEach(t => t.textContent = label);
+    const ic = btn.querySelector(".btn-i"); if (ic) ic.innerHTML = (ex ? UP_ICON : WA_ICON).repeat(2);
+    document.getElementById("regNote").textContent = ex ? "Your slip is only used to confirm your fee. You can cover card or account numbers." : "Nothing is sent until you press send in WhatsApp.";
+    document.getElementById("f-centre").closest(".field").querySelector("label").textContent = ex ? "Which campus are you at?" : "Where do you study with Sir?";
+  }
+  form.querySelectorAll("input[name=status]").forEach(r => r.addEventListener("change", mode));
+  document.querySelectorAll("[data-existing]").forEach(a => a.addEventListener("click", () => {
+    const r = form.querySelector('input[name=status][value="Already at a campus"]'); r.checked = true; mode();
+  }));
+  setTimeout(mode, 0);
+
+  const bar = form.querySelector(".slip-progress i");
   XA.form(form, {
     name: v => v.trim().length > 1, phone: XA.isPhone, email: v => !v || /^\S+@\S+\.\S+$/.test(v),
-    syllabus: v => !!v, session: v => !!v, centre: v => !!v
+    syllabus: v => !!v, session: v => !!v, centre: v => !!v,
+    proof: () => !existing() || (window.XA_SLIP && XA_SLIP.hasFile(form))
   }, f => {
+    if (existing()) {
+      const data = new FormData(form);
+      ["email", "school", "note"].forEach(k => data.delete(k));
+      form.classList.add("sending");
+      XA_SLIP.send(data, p => { bar.style.width = p + "%"; }).then(() => {
+        form.classList.remove("sending");
+        document.getElementById("regDoneH").textContent = "Got it, thank you";
+        document.getElementById("regDoneP").innerHTML = `Sir's team will check your slip and send your student ID and password on WhatsApp to <b>${f.phone.replace(/</g, "")}</b>.`;
+        form.classList.add("sent");
+      }).catch(() => { form.classList.remove("sending"); const b = document.getElementById("fDropBox"); b.classList.add("invalid"); b.querySelector(".err").textContent = "The upload didn't go through. Check your internet and try again."; XA.sfx.error(); });
+      return;
+    }
     XA.wa(`Assalam o Alaikum Sir, I'd like a student portal login.\n\nName: ${f.name}\nWhatsApp: ${f.phone}${f.email ? `\nEmail: ${f.email}` : ""}${f.school ? `\nSchool: ${f.school}` : ""}\nSyllabus: ${f.syllabus}\nSession: ${f.session}\nCampus: ${f.centre}${f.note ? `\nNote: ${f.note}` : ""}`);
+    document.getElementById("regDoneH").textContent = "WhatsApp is open with your details";
+    document.getElementById("regDoneP").textContent = "Press send there and Sir's team will reply with your portal login.";
     form.classList.add("sent");
   });
-  document.getElementById("regAgain").addEventListener("click", () => { form.reset(); form.classList.remove("sent"); });
+  document.getElementById("regAgain").addEventListener("click", () => { form.reset(); form.classList.remove("sent"); bar.style.width = "0%"; setTimeout(mode, 0); });
 })();

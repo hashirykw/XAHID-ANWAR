@@ -230,13 +230,15 @@
         <li>Sir's team confirms your campus, batch and fee on WhatsApp.</li>
         <li>You receive your student ID and password for the portal.</li>
       </ol>
-      <a class="slip-link" href="/portal#verify"><span class="as-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l4 4v16H6z"/><path d="M9 12h7M9 16h5"/></svg></span><span><b>Already studying at one of Sir's campuses?</b> Skip the form and get your login with a photo of your fee card or transfer slip.</span><svg class="as-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="slip-link" href="#register" data-existing><span class="as-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l4 4v16H6z"/><path d="M9 12h7M9 16h5"/></svg></span><span><b>Already studying at one of Sir's campuses?</b> Skip the form and get your login with a photo of your fee card or transfer slip.</span><svg class="as-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <div class="form-shell">
       <i class="mascot reg-mascot" aria-hidden="true"></i>
       <form class="reg-form glass" id="regForm" novalidate data-steps>
         <div class="fs-steps">
           <div class="fstep form-grid" data-title="You">
+            <div class="field" id="statusBox"><span class="label">Are you already studying with Sir?</span>
+              <div class="seg seg-2" id="fStatus"><label><input type="radio" name="status" value="New student" checked><span>I'm new</span></label><label><input type="radio" name="status" value="Already at a campus"><span>Already at a campus</span></label></div></div>
             <div class="field"><label for="f-name">Student name</label><input id="f-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
             <div class="field"><label for="f-phone">WhatsApp number</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter a number we can WhatsApp, like 0311 2004967.</span></div>
           </div>
@@ -249,17 +251,34 @@
             <select id="f-centre" name="centre" required><option value="">Choose a campus</option></select><span class="err">Choose a campus, or "Online".</span></div>
           </div>
           <div class="fstep form-grid two" data-title="Extras" data-optional>
-            <div class="field"><label for="f-email">Email <small>(optional)</small></label><input id="f-email" name="email" type="email" autocomplete="email"><span class="err">Check the email address.</span></div>
-            <div class="field"><label for="f-school">School <small>(optional)</small></label><input id="f-school" name="school" autocomplete="organization"></div>
-            <div class="field full"><label for="f-note">Anything else <small>(optional)</small></label><textarea id="f-note" name="note" placeholder="Current grade, batch timing you prefer, what you find hardest"></textarea></div>
+            <div class="field" data-for="new"><label for="f-email">Email <small>(optional)</small></label><input id="f-email" name="email" type="email" autocomplete="email"><span class="err">Check the email address.</span></div>
+            <div class="field" data-for="new"><label for="f-school">School <small>(optional)</small></label><input id="f-school" name="school" autocomplete="organization"></div>
+            <div class="field full" data-for="new"><label for="f-note">Anything else <small>(optional)</small></label><textarea id="f-note" name="note" placeholder="Current grade, batch timing you prefer, what you find hardest"></textarea></div>
+            <div class="field full" data-for="existing" hidden><span class="label">What are you uploading?</span>
+              <div class="seg seg-2"><label><input type="radio" name="proofType" value="Fee card" checked><span>Fee card</span></label><label><input type="radio" name="proofType" value="Online transfer slip"><span>Transfer slip</span></label></div></div>
+            <div class="field full" data-for="existing" hidden id="fDropBox">
+              <span class="label" id="f-drop-lb">Photo or screenshot</span>
+              <label class="drop" for="f-file" aria-describedby="f-drop-lb">
+                <input id="f-file" name="proof" type="file" accept="image/*,application/pdf">
+                <span class="drop-empty">
+                  <span class="drop-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+                  <b>Tap to upload or take a photo</b>
+                  <small>Fee card or transfer slip · JPG, PNG or PDF, up to 10 MB</small>
+                </span>
+                <span class="drop-file" hidden><span class="drop-thumb"></span><span class="drop-meta"><b></b><small></small></span><span class="drop-x" aria-hidden="true">Change</span></span>
+              </label>
+              <span class="err">Add a photo of your fee card or transfer slip.</span>
+            </div>
+            <div class="field full" data-for="existing" hidden><label for="f-ref">Transaction ID or roll number <small>(optional)</small></label><input id="f-ref" name="ref" placeholder="Helps Sir's team find your payment faster"></div>
             <div class="field full"><button class="btn" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg>Send on WhatsApp</button></div>
           </div>
         </div>
-        <p class="form-note">Nothing is sent until you press send in WhatsApp.</p>
+        <p class="form-note" id="regNote">Nothing is sent until you press send in WhatsApp.</p>
+        <div class="slip-progress" aria-hidden="true"><i></i></div>
         <div class="form-done" role="status">
           <i class="mascot" aria-hidden="true"></i>
-          <h3>WhatsApp is open with your details</h3>
-          <p>Press send there and Sir's team will reply with your portal login.</p>
+          <h3 id="regDoneH">WhatsApp is open with your details</h3>
+          <p id="regDoneP">Press send there and Sir's team will reply with your portal login.</p>
           <button class="link-btn" type="button" id="regAgain" style="color:#fff">Register another student</button>
         </div>
       </form>
@@ -317,6 +336,7 @@
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/chat.js"></script>
 <script src="/assets/js/pwa.js"></script>
+<script src="/assets/js/slip.js"></script>
 <script src="/assets/js/home.js"></script>
 <script src="/assets/js/steps.js"></script>
 </body>

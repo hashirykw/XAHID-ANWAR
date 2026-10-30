@@ -207,3 +207,24 @@ a.t-ai:hover .peek{transform:rotate(-4deg) translateY(-3px)}
 .slip-link .as-ic svg{width:19px;height:19px}
 .slip-link .as-go{width:18px;height:18px;flex:none;margin-left:auto;transition:transform .35s var(--ease-o)}
 .slip-link:hover .as-go{transform:translateX(3px)}
+
+/* phones: explore cards sit two to a column, big cards span both, nothing stretches */
+@media (max-width:699px){
+  .bento.swipe-m{grid-template-rows:auto auto;grid-auto-columns:min(78vw,300px);align-items:stretch}
+  .bento.swipe-m>.tile{min-height:0;padding:18px;gap:8px;border-radius:20px}
+  .bento.swipe-m>.t-ai,.bento.swipe-m>.t-yt{grid-row:span 2!important}
+  .bento .tile h3{font-size:1.02rem}
+  .bento .tile p{font-size:.88rem}
+  .bento .tile .go{font-size:.88rem;padding-top:4px}
+  .t-ai .essay{padding:12px;font-size:.82rem;line-height:1.6}
+  .t-ai .essay-foot{gap:6px;margin-top:8px}.t-ai .essay-foot .chip{font-size:.72rem;padding:4px 8px}
+  .t-portal .mini-list{gap:6px}.t-portal .mini-list li{padding:8px 10px;font-size:.8rem}
+  .t-papers .timer{font-size:1.9rem}
+  .t-papers .quit{font-size:.76rem;padding:8px 10px}
+  .t-books .covers{gap:8px}.t-books .covers img{width:38%;max-width:96px}
+  .t-books .price{font-size:1.1rem}
+  .t-word .word{font-size:1.4rem}.t-word .word-eg{font-size:.86rem}
+  .bento.swipe-m>.t-yt{justify-content:flex-end;background:radial-gradient(120% 70% at 100% 0%,rgba(255,0,0,.28),transparent 60%),var(--ink-2)}
+  .t-yt .yt-mark{width:84px;height:60px;margin-bottom:auto;filter:drop-shadow(0 14px 24px rgba(255,0,0,.35))}
+  .t-yt h3{font-size:1.3rem!important}
+}

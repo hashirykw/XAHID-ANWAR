@@ -1,0 +1,38 @@
+/* Fee card / transfer slip upload box (loaded by assets/js/slip.js) */
+.drop{position:relative;display:block;border-radius:18px;border:2px dashed rgba(26,20,16,.2);background:#FFFCF7;cursor:pointer;transition:border-color .25s,background .25s,box-shadow .25s}
+.drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
+.drop:hover,.drop.over{border-color:var(--ember);background:rgba(217,68,15,.05)}
+.drop:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(26,20,16,.12)}
+.drop-empty{display:grid;justify-items:center;gap:6px;padding:26px 16px;text-align:center}
+.drop-ic{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:rgba(217,68,15,.1);color:var(--ember-deep);margin-bottom:4px;transition:transform .45s var(--ease-o)}
+.drop:hover .drop-ic,.drop.over .drop-ic{transform:translateY(-3px)}
+.drop-ic svg{width:24px;height:24px}
+.drop-empty b{font-size:.98rem}
+.drop-empty small{font-size:.82rem;color:var(--muted)}
+.drop.has .drop-empty{display:none}
+.drop-file{display:flex;align-items:center;gap:14px;padding:12px}
+.drop-file[hidden]{display:none}
+.drop-thumb{width:64px;height:64px;flex:none;border-radius:12px;background:var(--bone) center/cover no-repeat;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.8rem;color:var(--ember-deep);box-shadow:inset 0 0 0 1px rgba(26,20,16,.08)}
+.drop-meta{display:grid;min-width:0;flex:1;line-height:1.3}
+.drop-meta b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.94rem}
+.drop-meta small{color:#1F7A47;font-weight:600;font-size:.8rem}
+.drop-x{flex:none;padding:8px 12px;border-radius:10px;background:var(--bone);font-weight:700;font-size:.82rem}
+.field.invalid .drop{border-color:#B3260B;background:rgba(179,38,11,.04)}
+
+/* on the orange forms */
+.on-ember .drop{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.1);color:#fff}
+.on-ember .drop:hover,.on-ember .drop.over{border-color:#fff;background:rgba(255,255,255,.18)}
+.on-ember .drop:focus-within{border-color:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.25)}
+.on-ember .drop-ic{background:var(--bone-2);color:var(--ember-deep)}
+.on-ember .drop-empty small{color:rgba(255,255,255,.8)}
+.on-ember .drop-thumb{box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+.on-ember .drop-meta small{color:#C9FFD9}
+.on-ember .drop-x{background:rgba(255,255,255,.2);color:#fff}
+.on-ember .field.invalid .drop{border-color:#FFE1D1;background:rgba(255,225,209,.12)}
+.drop.pop .drop-thumb{animation:slipPop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slipPop{from{transform:scale(.4) rotate(-8deg);opacity:0}}
+.slip-progress{height:4px;border-radius:4px;background:rgba(26,20,16,.1);overflow:hidden;opacity:0;transition:opacity .2s;margin-top:12px}
+.on-ember .slip-progress{background:rgba(255,255,255,.25)}
+.slip-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--marigold),#FFD84D);border-radius:inherit;transition:width .2s linear}
+form.sending .slip-progress{opacity:1}
+form.sending .fs-steps,form.sending .fs-nav{opacity:.6;pointer-events:none}

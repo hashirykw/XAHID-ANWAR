@@ -250,7 +250,7 @@ p{margin:0}
 /* nav: lighter, warmer glass */
 .nav-pill.glass{background:linear-gradient(145deg,rgba(90,44,22,.26),rgba(40,24,16,.14));backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(26,20,16,.1),0 18px 40px -26px rgba(26,20,16,.55)}
-.nav.scrolled .nav-pill.glass{background:linear-gradient(145deg,rgba(64,34,20,.58),rgba(36,22,15,.46))}
+.nav.scrolled .nav-pill.glass{background:linear-gradient(145deg,rgba(48,30,20,.84),rgba(26,20,16,.78))}
 .nav-links a{color:rgba(255,248,240,.9)}
 
 /* ---------- motion buttons (rolling label, sliding arrow, flood fill) ---------- */
@@ -368,3 +368,5 @@ p{margin:0}
 .promo-btns .btn{width:100%}
 .promo-later{color:var(--muted)}
 .promo .modal-close{z-index:2;background:rgba(255,255,255,.22);color:#fff}
+.seg.seg-2{display:grid;grid-template-columns:1fr 1fr}
+.seg.seg-2 span{width:100%;justify-content:center;white-space:normal;text-align:center;line-height:1.2;padding:6px 12px}
