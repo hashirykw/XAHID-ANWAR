@@ -234,20 +234,26 @@
     </div>
     <div class="form-shell">
       <i class="mascot reg-mascot" aria-hidden="true"></i>
-      <form class="reg-form glass" id="regForm" novalidate>
-        <div class="form-grid two">
-          <div class="field"><label for="f-name">Student name</label><input id="f-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
-          <div class="field"><label for="f-phone">WhatsApp number</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter a number we can WhatsApp, like 0311 2004967.</span></div>
-          <div class="field"><label for="f-email">Email <small>(optional)</small></label><input id="f-email" name="email" type="email" autocomplete="email"><span class="err">Check the email address.</span></div>
-          <div class="field"><label for="f-school">School <small>(optional)</small></label><input id="f-school" name="school" autocomplete="organization"></div>
-          <div class="field"><label for="f-syl">Syllabus</label>
+      <form class="reg-form glass" id="regForm" novalidate data-steps>
+        <div class="fs-steps">
+          <div class="fstep form-grid" data-title="You">
+            <div class="field"><label for="f-name">Student name</label><input id="f-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
+            <div class="field"><label for="f-phone">WhatsApp number</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter a number we can WhatsApp, like 0311 2004967.</span></div>
+          </div>
+          <div class="fstep form-grid" data-title="Class">
+            <div class="field"><label for="f-syl">Syllabus</label>
             <select id="f-syl" name="syllabus" required><option value="">Choose a syllabus</option><option>O Level 1123</option><option>IGCSE 0500</option><option>IGCSE 0510</option><option>IGCSE 0511</option><option>Not sure yet</option></select><span class="err">Choose a syllabus.</span></div>
-          <div class="field"><label for="f-session">Exam session</label>
+            <div class="field"><label for="f-session">Exam session</label>
             <select id="f-session" name="session" required><option value="">Choose a session</option><option>May/June 2027</option><option>Oct/Nov 2027</option><option>May/June 2028</option><option>Not decided</option></select><span class="err">Choose a session.</span></div>
-          <div class="field full"><label for="f-centre">Where do you study with Sir?</label>
+            <div class="field full"><label for="f-centre">Where do you study with Sir?</label>
             <select id="f-centre" name="centre" required><option value="">Choose a campus</option></select><span class="err">Choose a campus, or "Online".</span></div>
-          <div class="field full"><label for="f-note">Anything else <small>(optional)</small></label><textarea id="f-note" name="note" placeholder="Current grade, batch timing you prefer, what you find hardest"></textarea></div>
-          <div class="field full"><button class="btn" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg>Send on WhatsApp</button></div>
+          </div>
+          <div class="fstep form-grid two" data-title="Extras" data-optional>
+            <div class="field"><label for="f-email">Email <small>(optional)</small></label><input id="f-email" name="email" type="email" autocomplete="email"><span class="err">Check the email address.</span></div>
+            <div class="field"><label for="f-school">School <small>(optional)</small></label><input id="f-school" name="school" autocomplete="organization"></div>
+            <div class="field full"><label for="f-note">Anything else <small>(optional)</small></label><textarea id="f-note" name="note" placeholder="Current grade, batch timing you prefer, what you find hardest"></textarea></div>
+            <div class="field full"><button class="btn" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg>Send on WhatsApp</button></div>
+          </div>
         </div>
         <p class="form-note">Nothing is sent until you press send in WhatsApp.</p>
         <div class="form-done" role="status">
@@ -312,5 +318,6 @@
 <script src="/assets/js/chat.js"></script>
 <script src="/assets/js/pwa.js"></script>
 <script src="/assets/js/home.js"></script>
+<script src="/assets/js/steps.js"></script>
 </body>
 </html>

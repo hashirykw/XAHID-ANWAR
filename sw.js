@@ -2,11 +2,11 @@
    Pages, styles and scripts: network first (so updates show straight away), cached copy when offline.
    Images and fonts: served from cache, refreshed in the background.
    Bump VERSION whenever you want every installed copy to clear its cache. */
-const VERSION = "xa-2026-10-30f";
+const VERSION = "xa-2026-10-30g";
 const CORE = [
   "/", "/ai-checker", "/portal", "/past-papers", "/books", "/offline.html",
-  "/assets/css/base.css", "/assets/css/home.css", "/assets/css/ai.css", "/assets/css/portal.css", "/assets/css/papers.css", "/assets/css/books.css", "/assets/css/chat.css", "/assets/css/pwa.css",
-  "/assets/js/loader.js", "/assets/js/main.js", "/assets/js/chat.js", "/assets/js/pwa.js", "/assets/js/home.js", "/assets/js/ai.js", "/assets/js/portal.js", "/assets/js/papers.js", "/assets/js/books.js",
+  "/assets/css/base.css", "/assets/css/home.css", "/assets/css/ai.css", "/assets/css/portal.css", "/assets/css/papers.css", "/assets/css/books.css", "/assets/css/chat.css", "/assets/css/pwa.css", "/assets/css/steps.css",
+  "/assets/js/loader.js", "/assets/js/main.js", "/assets/js/chat.js", "/assets/js/pwa.js", "/assets/js/steps.js", "/assets/js/home.js", "/assets/js/ai.js", "/assets/js/portal.js", "/assets/js/papers.js", "/assets/js/books.js",
   "/assets/img/xa-mark.svg", "/assets/img/mascot.svg", "/assets/img/icon-192.png", "/favicon.svg"
 ];
 

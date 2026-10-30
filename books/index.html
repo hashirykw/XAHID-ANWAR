@@ -150,18 +150,22 @@
         <p class="sum-note" id="sumNote">Delivery charges, if any, are confirmed on WhatsApp.</p>
       </div>
     </div>
-    <form class="order-form glass" id="orderForm" novalidate>
-      <div class="form-grid two">
-        <div class="field"><label for="o-name">Your name</label><input id="o-name" name="name" autocomplete="name" required><span class="err">Enter your name.</span></div>
-        <div class="field"><label for="o-phone">WhatsApp number</label><input id="o-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter a number we can WhatsApp.</span></div>
-        <div class="field full"><span class="label">How do you want it?</span>
+    <form class="order-form glass" id="orderForm" novalidate data-steps>
+      <div class="fs-steps">
+        <div class="fstep form-grid" data-title="Order">
+          <div class="field full"><span class="label">How do you want it?</span>
           <div class="seg" id="oHow"><label><input type="radio" name="how" value="Delivery" checked><span>Home delivery</span></label><label><input type="radio" name="how" value="Campus pickup"><span>Pick up at my campus</span></label></div></div>
-        <div class="field"><label for="o-qty">Number of sets</label>
+          <div class="field"><label for="o-qty">Number of sets</label>
           <div class="qty"><button type="button" data-q="-1" aria-label="One less set">−</button><input id="o-qty" name="qty" type="number" min="1" max="20" value="1" inputmode="numeric"><button type="button" data-q="1" aria-label="One more set">+</button></div></div>
-        <div class="field" id="cityBox"><label for="o-city">City</label><input id="o-city" name="city" autocomplete="address-level2" value="Karachi"><span class="err">Enter your city.</span></div>
-        <div class="field full" id="addrBox"><label for="o-addr">Delivery address</label><textarea id="o-addr" name="address" autocomplete="street-address" placeholder="House, street, area"></textarea><span class="err">Enter the address for delivery.</span></div>
-        <div class="field full" id="campusBox" hidden><label for="o-campus">Campus</label><input id="o-campus" name="campus" placeholder="e.g. EVO Institute, Bahadurabad"><span class="err">Tell us which campus.</span></div>
-        <div class="field full"><button class="btn" type="submit">Send order on WhatsApp</button></div>
+        </div>
+        <div class="fstep form-grid two" data-title="Details">
+          <div class="field"><label for="o-name">Your name</label><input id="o-name" name="name" autocomplete="name" required><span class="err">Enter your name.</span></div>
+          <div class="field"><label for="o-phone">WhatsApp number</label><input id="o-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter a number we can WhatsApp.</span></div>
+          <div class="field" id="cityBox"><label for="o-city">City</label><input id="o-city" name="city" autocomplete="address-level2" value="Karachi"><span class="err">Enter your city.</span></div>
+          <div class="field full" id="addrBox"><label for="o-addr">Delivery address</label><textarea id="o-addr" name="address" autocomplete="street-address" placeholder="House, street, area"></textarea><span class="err">Enter the address for delivery.</span></div>
+          <div class="field full" id="campusBox" hidden><label for="o-campus">Campus</label><input id="o-campus" name="campus" placeholder="e.g. EVO Institute, Bahadurabad"><span class="err">Tell us which campus.</span></div>
+          <div class="field full"><button class="btn" type="submit">Send order on WhatsApp</button></div>
+        </div>
       </div>
       <div class="form-done" role="status"><i class="mascot" aria-hidden="true"></i><h3>Your order is ready in WhatsApp</h3><p>Press send there. Sir's team will confirm the total and delivery.</p><button class="link-btn" type="button" id="orderAgain" style="color:#fff">Place another order</button></div>
     </form>
@@ -219,5 +223,6 @@
 <script src="/assets/js/chat.js"></script>
 <script src="/assets/js/pwa.js"></script>
 <script src="/assets/js/books.js"></script>
+<script src="/assets/js/steps.js"></script>
 </body>
 </html>

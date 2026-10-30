@@ -113,15 +113,20 @@
         <li><b>Your login arrives on WhatsApp</b><span>Student ID, password and the portal link, sent to the number you give.</span></li>
       </ol>
     </div>
-    <form class="verify-card" id="verifyForm" novalidate>
-      <div class="form-grid two">
-        <div class="field"><label for="v-name">Student name</label><input id="v-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
-        <div class="field"><label for="v-phone">WhatsApp number</label><input id="v-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter the number the login should go to.</span></div>
-        <div class="field"><label for="v-campus">Campus</label><select id="v-campus" name="campus" required><option value="">Choose your campus</option></select><span class="err">Choose your campus, or "Online".</span></div>
-        <div class="field"><label for="v-syl">Syllabus</label><select id="v-syl" name="syllabus" required><option value="">Choose a syllabus</option><option>O Level 1123</option><option>IGCSE 0500</option><option>IGCSE 0510</option><option>IGCSE 0511</option></select><span class="err">Choose a syllabus.</span></div>
-        <div class="field full"><span class="label">What are you uploading?</span>
+    <form class="verify-card" id="verifyForm" novalidate data-steps>
+      <div class="fs-steps">
+        <div class="fstep form-grid" data-title="You">
+          <div class="field"><label for="v-name">Student name</label><input id="v-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
+          <div class="field"><label for="v-phone">WhatsApp number</label><input id="v-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter the number the login should go to.</span></div>
+        </div>
+        <div class="fstep form-grid" data-title="Campus">
+          <div class="field"><label for="v-campus">Campus</label><select id="v-campus" name="campus" required><option value="">Choose your campus</option></select><span class="err">Choose your campus, or "Online".</span></div>
+          <div class="field"><label for="v-syl">Syllabus</label><select id="v-syl" name="syllabus" required><option value="">Choose a syllabus</option><option>O Level 1123</option><option>IGCSE 0500</option><option>IGCSE 0510</option><option>IGCSE 0511</option></select><span class="err">Choose a syllabus.</span></div>
+        </div>
+        <div class="fstep form-grid" data-title="Slip">
+          <div class="field full"><span class="label">What are you uploading?</span>
           <div class="seg" id="vType"><label><input type="radio" name="type" value="Fee card" checked><span>Fee card</span></label><label><input type="radio" name="type" value="Online transfer slip"><span>Online transfer slip</span></label></div></div>
-        <div class="field full" id="dropBox">
+          <div class="field full" id="dropBox">
           <span class="label" id="drop-lb">Photo or screenshot</span>
           <label class="drop" for="v-file" id="drop" aria-describedby="drop-lb">
             <input id="v-file" name="proof" type="file" accept="image/*,application/pdf" required>
@@ -138,8 +143,9 @@
           </label>
           <span class="err" id="dropErr">Add a photo of your fee card or transfer slip.</span>
         </div>
-        <div class="field full"><label for="v-ref">Transaction ID or roll number <small>(optional)</small></label><input id="v-ref" name="ref" placeholder="Helps Sir's team find your payment faster"></div>
-        <div class="field full"><button class="btn btn-ember" type="submit">Send for verification</button></div>
+          <div class="field full"><label for="v-ref">Transaction ID or roll number <small>(optional)</small></label><input id="v-ref" name="ref" placeholder="Helps Sir's team find your payment faster"></div>
+          <div class="field full"><button class="btn btn-ember" type="submit">Send for verification</button></div>
+        </div>
       </div>
       <p class="v-note">Your slip is only used to confirm your fee. You can cover card or account numbers before you upload.</p>
       <div class="v-progress" aria-hidden="true"><i></i></div>
@@ -272,5 +278,6 @@
 <script src="/assets/js/chat.js"></script>
 <script src="/assets/js/pwa.js"></script>
 <script src="/assets/js/portal.js"></script>
+<script src="/assets/js/steps.js"></script>
 </body>
 </html>

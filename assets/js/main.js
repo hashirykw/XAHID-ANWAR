@@ -140,6 +140,7 @@ window.XA = (function () {
       const box = f.closest(".field"); if (box) box.classList.toggle("invalid", !ok);
       f.setAttribute("aria-invalid", !ok); return ok;
     }
+    el._rules = rules; el._check = check;
     el.querySelectorAll("input,select,textarea").forEach(f => {
       f.addEventListener("blur", () => { if (f.value) check(f); });
       /* clear an error the moment it's fixed, so the form doesn't jump when you tap the next field */
@@ -149,7 +150,7 @@ window.XA = (function () {
     el.addEventListener("submit", e => {
       e.preventDefault(); let first = null;
       el.querySelectorAll("input,select,textarea").forEach(f => { if (f.type === "radio") return; if (!check(f) && !first) first = f; });
-      if (first) { sfx.error(); (first._xbtn || first).focus(); return; }
+      if (first) { sfx.error(); el.dispatchEvent(new CustomEvent("xa:invalid", { detail: first })); (first._xbtn || first).focus({ preventScroll: el.hasAttribute("data-steps") }); return; }
       sfx.success(); onValid(Object.fromEntries(new FormData(el)));
     });
   }
