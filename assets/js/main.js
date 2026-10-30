@@ -1,4 +1,5 @@
-/* Sir Xahid Anwar · shared behaviour (nav, menu, search, WhatsApp, forms) */
+/* Sir Xahid Anwar · shared behaviour (nav, menu, search, sound, modals, buttons, dropdowns, forms)
+   The preloader lives in loader.js and the assistant in chat.js. */
 window.XA = (function () {
   const WA = "923112004967";
   const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -81,15 +82,15 @@ window.XA = (function () {
 
   /* command palette */
   const items = [
-    ["Home", "Page", "index.html"], ["AI Paper Checker", "Page", "ai-checker.html"], ["Student Portal", "Page", "portal.html"],
-    ["Past Papers", "Page", "past-papers.html"], ["Books", "Page", "books.html"],
-    ["Register for the portal", "Form", "index.html#register"], ["Where Sir teaches", "Home", "index.html#affiliations"],
-    ["Meet Sir Xahid", "Home", "index.html#about"], ["O Level 1123 English Language", "Syllabus", "past-papers.html?s=1123"],
-    ["IGCSE 0500 First Language English", "Syllabus", "past-papers.html?s=0500"], ["IGCSE 0510 English as a Second Language", "Syllabus", "past-papers.html?s=0510"],
-    ["IGCSE 0511 English as a Second Language", "Syllabus", "past-papers.html?s=0511"], ["Timed paper with lock mode", "Past Papers", "past-papers.html#finder"],
-    ["XA practice papers", "Past Papers", "past-papers.html#practice"], ["Sample marked essay", "AI Checker", "ai-checker.html#sample"],
-    ["Sign in to the portal", "Portal", "portal.html"], ["Reading and Writing Handbooks, Rs 5,000", "Books", "books.html"],
-    ["Order the handbooks", "Books", "books.html#order"], ["Professor eX on YouTube", "Video", "https://www.youtube.com/results?search_query=Professor+eX+English"],
+    ["Home", "Page", "/"], ["AI Paper Checker", "Page", "/ai-checker"], ["Student Portal", "Page", "/portal"],
+    ["Past Papers", "Page", "/past-papers"], ["Books", "Page", "/books"],
+    ["Register for the portal", "Form", "/#register"], ["Where Sir teaches", "Home", "/#affiliations"],
+    ["Meet Sir Xahid", "Home", "/#about"], ["O Level 1123 English Language", "Syllabus", "/past-papers?s=1123"],
+    ["IGCSE 0500 First Language English", "Syllabus", "/past-papers?s=0500"], ["IGCSE 0510 English as a Second Language", "Syllabus", "/past-papers?s=0510"],
+    ["IGCSE 0511 English as a Second Language", "Syllabus", "/past-papers?s=0511"], ["Timed paper with lock mode", "Past Papers", "/past-papers#finder"],
+    ["XA practice papers", "Past Papers", "/past-papers#practice"], ["Sample marked essay", "AI Checker", "/ai-checker#sample"],
+    ["Sign in to the portal", "Portal", "/portal"], ["Reading and Writing Handbooks, Rs 5,000", "Books", "/books"],
+    ["Order the handbooks", "Books", "/books#order"], ["Professor eX on YouTube", "Video", "https://www.youtube.com/results?search_query=Professor+eX+English"],
     ["WhatsApp 0311 2004967", "Contact", "https://wa.me/" + WA]
   ];
   const pal = document.getElementById("palette");
@@ -149,72 +150,8 @@ window.XA = (function () {
   }
   const isPhone = v => v.replace(/\D/g, "").length >= 10;
 
-  /* chat assistant: instant answers from a small knowledge base, WhatsApp for the rest */
-  const chat = document.getElementById("chat");
-  if (chat) {
-    const fab = document.getElementById("chatFab"), log = document.getElementById("chatLog"), chips = document.getElementById("chatChips");
-    const input = document.getElementById("chatInput");
-    const waLink = t => `<a href="https://wa.me/${WA}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">WhatsApp the team</a>`;
-    const KB = [
-      [/(fee|fees|price|cost|charges|timing|timings|time|batch|schedule|kitna|kitni)/, () => `Fees and timings depend on your campus and batch, so Sir's team quotes them directly. ${waLink("Assalam o Alaikum, what are the fees and timings for English?")} and they'll reply with the exact numbers.`],
-      [/(where|campus|campuses|location|academy|academies|area|north|nazimabad|gulshan|johar|bahadurabad|school)/, () => `Sir teaches at 27 schools and academies, including The Professionals Core, Success Institute, EVO Institute, Panwala Institute and The Caspian Institute, plus online batches. <a href="index.html#affiliations">See them all</a>.`],
-      [/(online|zoom|abroad|outside karachi|dubai|uae|saudi)/, () => `Yes, there are online batches for students outside Karachi and abroad. ${waLink("Assalam o Alaikum, I want to join an online English batch.")} to get placed.`],
-      [/(1123|0500|0510|0511|syllabus|igcse|o level|olevel|second language|first language)/, () => `Sir teaches O Level English Language 1123 and IGCSE 0500, 0510 and 0511. Paper 1 is Reading, Paper 2 is Writing, and 0510/0511 add Listening and Speaking.`],
-      [/(book|books|handbook|handbooks|notes|order)/, () => `The Reading Handbook and Writing Handbook come as a printed set for Rs 5,000. <a href="books.html#order">Order the set</a> and it opens WhatsApp with your order filled in.`],
-      [/(portal|login|log in|password|student id|sign in|signin)/, () => `Registered students get a student ID and password for the portal: notes, lectures, timed papers and results. Lost yours? ${waLink("Assalam o Alaikum, I need my portal login.")}.`],
-      [/(ai|check|checker|essay|mark|marking|feedback|composition)/, () => `Type your answer or upload photos of your page and the checker marks it with feedback and a model answer. Tests go to Sir for approval first. <a href="ai-checker.html">See how it works</a>.`],
-      [/(past paper|pastpaper|paper|papers|timer|timed|lock|give up|mock)/, () => `Every 1123, 0500, 0510 and 0511 paper opens on the site with its mark scheme beside it. Timed mode locks the screen until time is up. <a href="past-papers.html">Find a paper</a>.`],
-      [/(register|registration|admission|admissions|join|enrol|enroll|apply)/, () => `Admissions are open for May/June 2027. <a href="index.html#register">Fill in the registration form</a>; it sends your details to Sir's team on WhatsApp.`],
-      [/(youtube|professor ex|video|videos|lecture|lectures)/, () => `Free lessons are on Sir's YouTube channel, Professor eX. Recorded class lectures are in the student portal.`],
-      [/(hello|hi|hey|salam|assalam|aoa)/, () => `Wa alaikum assalam! Ask me about fees, campuses, books, the portal or past papers.`],
-      [/(thank|thanks|shukria|jazak)/, () => `Anytime. Read, write, repeat!`]
-    ];
-    const starters = ["Fees and timings", "Where does Sir teach?", "Order the books", "How does AI checking work?", "Register"];
-    let opened = false;
-    function add(html, who) { const d = document.createElement("div"); d.className = "msg " + who; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
-    function reply(q) {
-      const t = q.toLowerCase(); const hit = KB.find(k => k[0].test(t));
-      const typing = add("<i></i><i></i><i></i>", "bot typing");
-      setTimeout(() => { typing.remove(); add(hit ? hit[1]() : `I'm not sure about that one. ${waLink("Assalam o Alaikum, " + q)} and Sir's team will help.`, "bot"); sfx.pop(); }, reduce ? 100 : 650);
-    }
-    function ask(q) { q = q.trim(); if (!q) return; add(q.replace(/</g, "&lt;"), "me"); sfx.send(); reply(q); }
-    chips.innerHTML = starters.map(c => `<button type="button" data-sfx="none">${c}</button>`).join("");
-    chips.addEventListener("click", e => { const b = e.target.closest("button"); if (b) ask(b.textContent); });
-    document.getElementById("chatForm").addEventListener("submit", e => { e.preventDefault(); ask(input.value); input.value = ""; });
-    function setChat(open) {
-      document.body.classList.toggle("chat-open", open); fab.setAttribute("aria-expanded", open); chat.setAttribute("aria-hidden", !open);
-      open ? sfx.open() : sfx.close();
-      if (open && !opened) { opened = true; add("Assalam o Alaikum! I'm Sir X's assistant. Ask about fees, campuses, books, the portal or past papers.", "bot"); }
-      if (open && matchMedia("(pointer:fine)").matches) setTimeout(() => input.focus(), 250);
-    }
-    fab.addEventListener("click", () => setChat(true));
-    document.getElementById("chatClose").addEventListener("click", () => setChat(false));
-    addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("chat-open")) setChat(false); });
-  }
-
-  /* ---------- preloader: Sir marks the page, stamps it, then it opens ---------- */
-  (function () {
-    const root = document.documentElement, L = document.getElementById("loader");
-    if (!L || !root.classList.contains("ld")) return;
-    const quick = root.classList.contains("ld-quick");
-    const lines = ["Sharpening the red pen…", "Removing “very very” from your essay…", "Counting your commas…", "Finding a better word than “good”…", "Checking you used your own words…"];
-    const num = document.getElementById("ldNum"), line = document.getElementById("ldLine");
-    const target = 25, dur = reduce ? 200 : quick ? 700 : 2100, t0 = performance.now();
-    let li = 0; const swap = () => { line.innerHTML = `<span>${lines[li++ % lines.length]}</span>`; };
-    swap(); const lt = quick ? null : setInterval(swap, 520);
-    let loaded = document.readyState === "complete"; addEventListener("load", () => loaded = true);
-    function step(now) {
-      const k = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - k, 3);
-      num.textContent = Math.round(e * target);
-      if (k < 1 || !loaded && now - t0 < 4500) return requestAnimationFrame(step);
-      clearInterval(lt); line.innerHTML = "<span>Band 5. Approved by Sir.</span>"; L.classList.add("done");
-      setTimeout(finish, quick ? 350 : 750);
-    }
-    function finish() { L.classList.add("out"); setTimeout(() => { root.classList.remove("ld", "ld-quick"); L.remove(); document.dispatchEvent(new Event("xa:ready")); }, reduce ? 0 : 900); try { sessionStorage.setItem("xa-ld", "1"); } catch (e) {} }
-    requestAnimationFrame(step);
-    const sk = document.getElementById("ldSkip"); if (sk) sk.addEventListener("click", () => { clearInterval(lt); finish(); });
-  })();
-  const whenReady = fn => document.getElementById("loader") && document.documentElement.classList.contains("ld") ? document.addEventListener("xa:ready", fn, { once: true }) : fn();
+  /* runs once the page is open (after the preloader, if one was needed) */
+  const whenReady = fn => (window.XA_LOADER && window.XA_LOADER.active) ? document.addEventListener("xa:ready", fn, { once: true }) : fn();
 
   /* ---------- motion buttons: rolling label, arrow that slides through, colour flood ---------- */
   const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -312,9 +249,9 @@ window.XA = (function () {
   if (promo) whenReady(() => {
     let seen = false; try { seen = sessionStorage.getItem("xa-promo"); } catch (e) {}
     const signed = (() => { try { return localStorage.getItem("xa-student"); } catch (e) { return null; } })();
-    if (seen || signed || /portal\.html/.test(location.pathname)) return;
+    if (seen || signed || /^\/portal/.test(location.pathname)) return;
     setTimeout(() => {
-      if (document.body.classList.contains("exam-on") || document.querySelector(".modal.open,.viewer:not([hidden])")) return;
+      if (document.body.classList.contains("exam-on") || document.body.classList.contains("chat-open") || document.querySelector(".modal.open,.viewer:not([hidden])")) return;
       openModal("promo"); sfx.success(); try { sessionStorage.setItem("xa-promo", "1"); } catch (e) {}
     }, 3200);
     promo.addEventListener("click", e => { if (e.target.closest("[data-promo-go]")) closeModal(promo); });

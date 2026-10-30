@@ -17,7 +17,7 @@
       ["Writing", "Narrative composition", "Hook, tension, turning point, ending that lands."]
     ],
     lectures: [["Summary skills, part 1", "24 min", 100], ["Explicit meaning practice", "31 min", 60], ["Use of language: similes and metaphors", "28 min", 35], ["Directed writing: argumentative letter", "36 min", 0], ["Descriptive writing: a busy market", "33 min", 0], ["Narrative: building suspense", "29 min", 0]],
-    papers: [["1123 May/June 2025 · Paper 1 Reading (12)", "Due Friday", "past-papers.html?s=1123&y=2025&ss=s&c=12"], ["XA Practice Paper 1 · Reading", "Due next week", "past-papers.html#practice"], ["1123 Oct/Nov 2024 · Paper 2 Writing (22)", "Done · 41/50", "past-papers.html?s=1123&y=2024&ss=w&c=22"]],
+    papers: [["1123 May/June 2025 · Paper 1 Reading (12)", "Due Friday", "/past-papers?s=1123&y=2025&ss=s&c=12"], ["XA Practice Paper 1 · Reading", "Due next week", "/past-papers#practice"], ["1123 Oct/Nov 2024 · Paper 2 Writing (22)", "Done · 41/50", "/past-papers?s=1123&y=2024&ss=w&c=22"]],
     results: [["Diagnostic", "2 Sep", 29, 1], ["Reading test 1", "16 Sep", 33, 1], ["Writing test 1", "30 Sep", 35, 1], ["Reading test 2", "14 Oct", 38, 1], ["Mock 1", "21 Oct", 41, 1], ["Writing test 2", "28 Oct", null, 0]]
   };
 

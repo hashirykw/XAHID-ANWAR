@@ -46,9 +46,9 @@
 
   /* ---------- XA practice papers ---------- */
   const XA_PAPERS = [
-    { xa: true, id: "xa-1", title: "XA Practice Paper 1 · Reading", name: "Reading", min: 120, marks: 50, docs: ["qp", "ms"], files: { qp: "practice/xa-1-reading.html", ms: "practice/xa-1-reading-ms.html" },
+    { xa: true, id: "xa-1", title: "XA Practice Paper 1 · Reading", name: "Reading", min: 120, marks: 50, docs: ["qp", "ms"], files: { qp: "/practice/xa-1-reading", ms: "/practice/xa-1-reading-ms" },
       blurb: "Two original texts: a story set in a Saddar bicycle shop, and an article on plastic on Karachi's beaches.", tags: ["Comprehension", "Use of language", "Summary", "Short response"] },
-    { xa: true, id: "xa-2", title: "XA Practice Paper 2 · Writing", name: "Writing", min: 120, marks: 50, docs: ["qp", "ms"], files: { qp: "practice/xa-2-writing.html", ms: "practice/xa-2-writing-ms.html" },
+    { xa: true, id: "xa-2", title: "XA Practice Paper 2 · Writing", name: "Writing", min: 120, marks: 50, docs: ["qp", "ms"], files: { qp: "/practice/xa-2-writing", ms: "/practice/xa-2-writing-ms" },
       blurb: "A directed-writing letter on banning phones in school, plus four composition titles.", tags: ["Directed writing", "Descriptive", "Narrative"] }
   ];
   document.getElementById("xaGrid").innerHTML = XA_PAPERS.map((x, i) => `<article class="xcard glass glass-ink"><span class="tag">1123 format · ${len(x.min)} · ${x.marks} marks</span><h3>${x.title}</h3><p>${x.blurb}</p><ul>${x.tags.map(t => `<li>${t}</li>`).join("")}</ul><div class="pcard-btns"><button class="btn btn-bone" data-xa="${i}" data-act="open">Open with mark scheme</button><button class="btn btn-ember" data-xa="${i}" data-act="timed">Sit it timed</button></div></article>`).join("");
@@ -72,7 +72,7 @@
     const list = all.filter(p => (!y || p.y == y) && (!ss || p.ss === ss) && (!c || `${p.p}|${p.name}` === c));
     document.getElementById("resCount").textContent = `${list.length} paper${list.length === 1 ? "" : "s"} for ${code}, ${SYL[code].name}`;
     if (!list.length) { grid.innerHTML = `<div class="empty-state"><i class="mascot"></i><b>No papers match those filters</b><span>Try "All sessions" or another year.</span></div>`; return; }
-    grid.innerHTML = list.slice(0, shown).map(p => `<article class="pcard"><div class="pcard-top"><div><span class="code">${p.code}</span><small> · ${SESS[p.ss]} ${p.y} · Variant ${p.v}</small><h3>Paper ${p.p} · ${p.name}</h3></div><span class="len">${len(p.min)}</span></div><div class="pcard-btns"><button class="btn btn-line" data-id="${p.id}" data-act="open">Open paper</button><button class="btn" data-id="${p.id}" data-act="timed">Sit it timed</button></div></article>`).join("")
+    grid.innerHTML = list.slice(0, shown).map(p => `<article class="pcard"><div class="pcard-top"><div><span class="code">${p.code}</span><small class="meta">${SESS[p.ss]} ${p.y} · Variant ${p.v}</small><h3>Paper ${p.p} · ${p.name}</h3></div><span class="len">${len(p.min)}</span></div><div class="pcard-btns"><button class="btn btn-line" data-id="${p.id}" data-act="open">Open paper</button><button class="btn" data-id="${p.id}" data-act="timed">Sit it timed</button></div></article>`).join("")
       + (list.length > shown ? `<div class="more" style="grid-column:1/-1"><button class="btn btn-line" id="moreBtn">Show more papers</button></div>` : "");
     const mb = document.getElementById("moreBtn"); if (mb) mb.addEventListener("click", () => { shown += PAGE; render(); });
   }
@@ -239,7 +239,7 @@
     const l = getLog(), marked = l.filter(a => a.mark != null && a.of);
     const pct = marked.map(a => Math.round(a.mark / a.of * 100));
     document.getElementById("logStats").innerHTML = `<div><b>${l.length}</b><span>papers sat</span></div><div><b>${pct.length ? Math.round(pct.reduce((a, b) => a + b, 0) / pct.length) + "%" : "–"}</b><span>average mark</span></div><div><b>${pct.length ? Math.max(...pct) + "%" : "–"}</b><span>best mark</span></div>`;
-    document.getElementById("logBody").innerHTML = l.length ? l.map(a => `<tr><td>${a.t}</td><td>${new Date(a.d).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</td><td>${fmt(a.used)}</td><td>${a.leaves}</td><td>${a.mark == null ? "–" : a.mark + (a.of ? "/" + a.of : "")}</td></tr>`).join("")
+    document.getElementById("logBody").innerHTML = l.length ? l.map(a => `<tr><td data-l="Paper">${a.t}</td><td data-l="Date">${new Date(a.d).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</td><td data-l="Time used">${fmt(a.used)}</td><td data-l="Left the exam">${a.leaves}</td><td data-l="Mark">${a.mark == null ? "–" : a.mark + (a.of ? "/" + a.of : "")}</td></tr>`).join("")
       : `<tr><td class="none" colspan="5">No attempts yet. Pick a paper above and press "Sit it timed".</td></tr>`;
   }
 

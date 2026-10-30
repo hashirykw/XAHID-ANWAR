@@ -2,23 +2,36 @@
 
 O Level and IGCSE English Language (1123, 0500, 0510, 0511). Static multi-page site, no build step.
 
-## Pages
-| File | What it is |
-|---|---|
-| `index.html` | Home: about Sir, courses, all affiliations, explore, portal registration (opens WhatsApp) |
-| `ai-checker.html` | AI paper checker: how it works, sample marked answer, locked checker for registered students |
-| `portal.html` | Student portal: sign in, dashboard with notes, lectures, papers and results |
-| `past-papers.html` | Past papers with mark scheme side by side, timed lock mode, XA practice papers, attempt log |
-| `books.html` | Reading and Writing Handbooks, Rs 5,000 set, order form (opens WhatsApp) |
+## Pages (clean URLs, no file names in the address bar)
+Every page lives in its own folder as `index.html`, so the address is just the folder name.
 
-## Folders
-- `assets/css/base.css` shared styles; one stylesheet per page (`home`, `ai`, `portal`, `papers`, `books`)
-- `assets/js/main.js` shared nav, menu panel, search (Ctrl K), sound effects, chat assistant, form helpers; one script per page
+| URL | File | What it is |
+|---|---|---|
+| `/` | `index.html` | Home: about Sir, courses, all affiliations, explore, portal registration (opens WhatsApp) |
+| `/ai-checker` | `ai-checker/index.html` | AI paper checker: how it works, sample marked answer, locked checker for registered students |
+| `/portal` | `portal/index.html` | Student portal: sign in, dashboard with notes, lectures, papers and results |
+| `/past-papers` | `past-papers/index.html` | Past papers with mark scheme side by side, timed lock mode, XA practice papers, attempt log |
+| `/books` | `books/index.html` | Reading and Writing Handbooks, Rs 5,000 set, order form (opens WhatsApp) |
+| `/practice/...` | `practice/<paper>/index.html` | XA practice papers and mark schemes (original, printable) |
+| any wrong link | `404.html` | Friendly not-found page |
+
+`vercel.json` turns on clean URLs and redirects the old `.html` addresses to the new ones, so links shared before still work.
+All paths inside the site are root-relative (`/assets/...`, `/books`), so every page works no matter how deep it sits.
+
+## Assets (one job per file)
+- `assets/css/base.css` shared styles (tokens, type, buttons, forms, nav, footer, modals)
+- `assets/css/chat.css` the Ask Sir X assistant (loaded by `chat.js` itself)
+- `assets/css/<page>.css` one stylesheet per page (`home`, `ai`, `portal`, `papers`, `books`)
+- `assets/js/loader.js` preloader, self-contained. It only appears if a page takes longer than ~0.45 s to load, and its ring follows real loading progress
+- `assets/js/main.js` shared behaviour: nav, menu, search (Ctrl K), sound effects, modals, motion buttons, dropdowns, form helpers
+- `assets/js/chat.js` the assistant: builds its own markup, keeps the conversation while you move between pages, hands anything it can't answer to WhatsApp
+- `assets/js/<page>.js` one script per page
 - `assets/img/` photos, mascot and logo (SVG), `logos/` affiliations, `books/` covers
-- `practice/` XA practice papers and mark schemes (original, printable)
 
 ## Settings to know
-- WhatsApp number: `WA` in `assets/js/main.js`
+- WhatsApp number: `WA` in `assets/js/main.js` (the assistant reads it from there)
+- Assistant answers: `INTENTS` in `assets/js/chat.js`
+- Affiliations shown on the home page: `affils` in `assets/js/home.js`
 - Timed-mode exit phrase and Sir's override key: `PHRASE` and `MAGIC` in `assets/js/papers.js`
 - Past-paper source: `SRC` in `assets/js/papers.js`
 

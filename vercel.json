@@ -1,0 +1,62 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/ai-checker.html",
+      "destination": "/ai-checker",
+      "permanent": true
+    },
+    {
+      "source": "/portal.html",
+      "destination": "/portal",
+      "permanent": true
+    },
+    {
+      "source": "/past-papers.html",
+      "destination": "/past-papers",
+      "permanent": true
+    },
+    {
+      "source": "/books.html",
+      "destination": "/books",
+      "permanent": true
+    },
+    {
+      "source": "/practice/xa-1-reading.html",
+      "destination": "/practice/xa-1-reading",
+      "permanent": true
+    },
+    {
+      "source": "/practice/xa-1-reading-ms.html",
+      "destination": "/practice/xa-1-reading-ms",
+      "permanent": true
+    },
+    {
+      "source": "/practice/xa-2-writing.html",
+      "destination": "/practice/xa-2-writing",
+      "permanent": true
+    },
+    {
+      "source": "/practice/xa-2-writing-ms.html",
+      "destination": "/practice/xa-2-writing-ms",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/img/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    }
+  ]
+}
