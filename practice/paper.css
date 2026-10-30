@@ -1,0 +1,28 @@
+/* XA practice papers: plain, printable exam style */
+:root{--ink:#1A1410;--ember:#D9440F;--muted:#5d5249}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.65 Georgia,"Times New Roman",serif}
+.page{max-width:760px;margin:0 auto;padding:36px 28px 60px}
+.cover{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
+.cover h1{font:700 1.25rem/1.25 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}
+.cover p{margin:4px 0 0;font:500 .9rem system-ui,sans-serif;color:var(--muted)}
+.badge{flex:none;font:800 .8rem system-ui,sans-serif;color:#fff;background:var(--ember);padding:6px 10px;border-radius:6px}
+.rules{font:.92rem/1.6 system-ui,sans-serif;background:#F6F2EA;border-radius:8px;padding:12px 16px;margin-bottom:26px}
+.rules ul{margin:6px 0 0;padding-left:18px}
+h2{font:700 1.02rem system-ui,sans-serif;margin:30px 0 8px;padding-top:14px;border-top:1px solid #ddd}
+h3{font:700 .95rem system-ui,sans-serif;margin:20px 0 6px}
+.text{border:1px solid #cfc6bb;border-radius:8px;padding:16px 18px;margin:10px 0 18px;background:#FFFDF8}
+.text p{margin:0 0 10px}
+.text .src{font:italic .85rem system-ui,sans-serif;color:var(--muted)}
+ol.q{padding-left:22px}
+ol.q > li{margin:0 0 14px}
+ol.sub{list-style:lower-alpha;padding-left:22px}
+ol.sub li{margin:0 0 8px}
+.mk{float:right;font:700 .85rem system-ui,sans-serif;margin-left:10px}
+.ms li{margin-bottom:6px}
+.ms .pts{font:.92rem/1.6 system-ui,sans-serif}
+table.bands{width:100%;border-collapse:collapse;font:.88rem/1.5 system-ui,sans-serif;margin:8px 0 18px}
+table.bands th,table.bands td{border:1px solid #d8d0c5;padding:8px 10px;text-align:left;vertical-align:top}
+table.bands th{background:#F6F2EA}
+.end{text-align:center;font:600 .85rem system-ui,sans-serif;color:var(--muted);margin-top:30px}
+@media print{.page{padding:0}}
