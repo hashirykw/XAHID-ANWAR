@@ -20,6 +20,19 @@
     b.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(b); } });
   });
 
+  /* journey: the line fills and steps light up as the section scrolls through */
+  const jr = document.getElementById("journey");
+  if (jr) {
+    const steps = [...jr.querySelectorAll(".j-step")];
+    const upd = () => {
+      const r = jr.getBoundingClientRect(), vh = innerHeight;
+      const p = XA.reduce ? 1 : Math.min(1, Math.max(0, (vh * 0.78 - r.top) / (r.height * 0.85)));
+      jr.style.setProperty("--prog", p.toFixed(3));
+      steps.forEach((s, i) => { const on = p >= i / steps.length - 0.02; if (on && !s.classList.contains("on")) XA.sfx.tick(); s.classList.toggle("on", on); });
+    };
+    upd(); addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd);
+  }
+
   /* tabs */
   const tabs = document.querySelectorAll(".tabs [role=tab]");
   tabs.forEach(t => t.addEventListener("click", () => {

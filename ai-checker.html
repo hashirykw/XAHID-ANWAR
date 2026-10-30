@@ -13,10 +13,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("ld");try{if(sessionStorage.getItem("xa-ld"))document.documentElement.classList.add("ld-quick")}catch(e){}</script>
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/ai.css">
 </head>
 <body>
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="ld-box">
+    <div class="ld-sheet">
+      <i class="mascot ld-mascot"></i>
+      <div class="ld-lines"><i></i><i></i><i></i><i></i></div>
+      <svg class="ld-pen" viewBox="0 0 100 18"><path d="M2 12 C 20 4, 34 16, 52 9 S 84 6, 98 11"/></svg>
+      <span class="ld-stamp">Approved</span>
+      <div class="ld-mark"><b id="ldNum">0</b><small>/25</small></div>
+      <svg class="ld-circle" viewBox="0 0 96 70"><path d="M70 8 C 30 0, 4 22, 10 44 S 70 72, 88 42 S 74 6, 52 10"/></svg>
+    </div>
+    <p class="ld-line" id="ldLine"></p>
+    <div class="ld-brand"><span class="brand-badge"><i class="xa"></i></span>Sir Xahid Anwar</div>
+  </div>
+  <button class="ld-skip" type="button" id="ldSkip" data-sfx="none">Skip</button>
+</div>
 <a href="#main" class="skip">Skip to content</a>
 <div class="progress" aria-hidden="true"></div>
 <header class="nav" id="nav">
@@ -65,16 +81,58 @@
   <div class="wrap">
     <div class="section-head">
       <h2 id="how-title">From your page to Sir's red pen</h2>
-      <p class="lede">Five steps, usually done the same evening.</p>
+      <p class="lede">Five steps, usually done the same evening. Scroll and watch an answer travel through them.</p>
     </div>
-    <p class="swipe-hint">Swipe through the steps</p>
-    <ol class="flow swipe-m">
-      <li class="flow-step"><span class="flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/></svg></span><h3>Write</h3><p>Answer a past-paper question or a task Sir has set, on paper or on screen.</p></li>
-      <li class="flow-step"><span class="flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg></span><h3>Upload</h3><p>Type it in, or take clear photos of each handwritten page.</p></li>
-      <li class="flow-step"><span class="flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><h3>Marked</h3><p>Marks for content and for language, line-by-line comments and a model answer.</p></li>
-      <li class="flow-step"><span class="flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><h3>Sir approves</h3><p>Tests, and any mark the checker is unsure of, go to Sir first. He can change any mark.</p></li>
-      <li class="flow-step"><span class="flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span><h3>Improve</h3><p>Fix the one thing it flags, rewrite, and watch the score climb in your portal.</p></li>
-    </ol>
+    <div class="journey" id="journey">
+      <div class="j-track" aria-hidden="true"><i class="j-fill"></i></div>
+      <ol class="j-steps">
+        <li class="j-step">
+          <div class="j-node"><span class="j-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/></svg></span><span class="j-num">1</span></div>
+          <div class="j-card">
+            <h3>Write your answer</h3>
+            <p>Pick a past-paper question or a task Sir has set. Write it on paper, the way you would in the exam, or type it straight into the checker.</p>
+            <div class="j-demo d-write" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
+            <ul class="j-pts"><li>Live word count</li><li>Optional exam timer</li></ul>
+          </div>
+        </li>
+        <li class="j-step">
+          <div class="j-node"><span class="j-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg></span><span class="j-num">2</span></div>
+          <div class="j-card">
+            <h3>Upload it</h3>
+            <p>Typed answers go in as they are. For handwriting, snap each page in good light; the checker reads your writing and keeps the pages in order.</p>
+            <div class="j-demo d-upload" aria-hidden="true"><span class="ph1"></span><span class="ph2"></span><span class="bar"><i></i></span></div>
+            <ul class="j-pts"><li>Up to 8 photos</li><li>Typed or handwritten</li></ul>
+          </div>
+        </li>
+        <li class="j-step">
+          <div class="j-node"><span class="j-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="j-num">3</span></div>
+          <div class="j-card">
+            <h3>Get it marked</h3>
+            <p>Your answer is marked against the Cambridge criteria: a mark for content, a mark for language, comments on the exact lines that earned or lost marks, and a model answer.</p>
+            <div class="j-demo d-mark" aria-hidden="true"><span class="ring"><b>21</b></span><span class="ticks"><i></i><i></i><i></i></span></div>
+            <ul class="j-pts"><li>Line-by-line comments</li><li>Model answer</li></ul>
+          </div>
+        </li>
+        <li class="j-step">
+          <div class="j-node"><span class="j-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><span class="j-num">4</span></div>
+          <div class="j-card">
+            <h3>Sir approves</h3>
+            <p>Tests, and any answer the checker isn't sure about, go to Sir Xahid first. He reads the marks and comments, changes anything he disagrees with, and signs it off.</p>
+            <div class="j-demo d-stamp" aria-hidden="true"><span>Approved · Sir X</span></div>
+            <ul class="j-pts"><li>Every test checked by Sir</li><li>Marks he can change</li></ul>
+          </div>
+        </li>
+        <li class="j-step">
+          <div class="j-node"><span class="j-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span><span class="j-num">5</span></div>
+          <div class="j-card">
+            <h3>Improve</h3>
+            <p>Fix the one thing it flagged, rewrite, and check again. Every result lands in your portal, so you and Sir can watch the scores climb test by test.</p>
+            <div class="j-demo d-grow" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <ul class="j-pts"><li>Score history in the portal</li><li>Rewrite and recheck</li></ul>
+          </div>
+        </li>
+      </ol>
+    </div>
   </div>
 </section>
 
@@ -93,9 +151,9 @@
           <p><span class="hl good" role="button" tabindex="0" data-c="2">"Somebody check the meter," Abbu said, in the voice he used for things that were definitely somebody else's job.</span></p>
           <p>That was when we heard the knock. <span class="hl fix" role="button" tabindex="0" data-c="3">Three slow knocks, then nothing, then three more.</span> Nobody we knew knocked like that.</p>
         </div>
-        <aside class="comment glass glass-ink" id="comment" role="status"><b>Tap a highlight</b><span>Each highlighted line has a comment from the checker.</span></aside>
+        <aside class="comment" id="comment" role="status"><b>Tap a highlight</b><span>Each highlighted line has a comment from the checker.</span></aside>
       </article>
-      <div class="score-card glass glass-ink">
+      <div class="score-card glass">
         <div class="score-top">
           <div class="big-ring" style="--p:84"><span>21<small>/25</small></span></div>
           <div><h3>Composition</h3><p class="muted">Band 4 of 5 · Practice</p><span class="status ok">Approved by Sir</span></div>
@@ -133,16 +191,22 @@
     <div class="section-head">
       <h2 id="modes-title">Practice or test, you always know which</h2>
     </div>
-    <div class="mode-grid swipe-m">
-      <article class="mode glass glass-paper">
-        <span class="mode-tag">Practice</span>
-        <h3>Results in a few minutes</h3>
-        <p>Write as often as you like. Marks and feedback come back straight away. If the checker isn't sure about a mark, it sends that answer to Sir and tells you.</p>
+    <div class="mode-grid">
+      <article class="mode m-practice">
+        <div class="mode-top"><span class="mode-tag">Practice</span><span class="mode-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg>About 3 minutes</span></div>
+        <h3>Results straight away</h3>
+        <p>Write as often as you like. Your marks, comments and model answer come back in minutes. If the checker isn't sure about a mark, it tells you and passes that answer to Sir.</p>
+        <div class="route" aria-label="You, then the checker, then back to you">
+          <span class="stop"><i>You</i></span><span class="lane"><b></b></span><span class="stop"><i>Checker</i></span><span class="lane"><b></b></span><span class="stop end"><i>Your result</i></span>
+        </div>
       </article>
-      <article class="mode glass glass-paper">
-        <span class="mode-tag ink">Test</span>
+      <article class="mode m-test">
+        <div class="mode-top"><span class="mode-tag">Test</span><span class="mode-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Same evening</span></div>
         <h3>Sir approves first</h3>
-        <p>Class tests and mocks wait for Sir. He reviews the checker's marks, changes anything he disagrees with, and then you see your result.</p>
+        <p>Class tests and mocks wait for Sir. He reviews the checker's marks, changes anything he disagrees with, and only then do you see your result.</p>
+        <div class="route" aria-label="You, the checker, Sir, then back to you">
+          <span class="stop"><i>You</i></span><span class="lane"><b></b></span><span class="stop"><i>Checker</i></span><span class="lane"><b></b></span><span class="stop sir"><i>Sir</i></span><span class="lane"><b></b></span><span class="stop end"><i>Result</i></span>
+        </div>
       </article>
     </div>
     <div class="checks">
@@ -185,13 +249,13 @@
         <div class="ws-foot"><button class="btn btn-ember" id="wSubmit" type="button">Check my answer</button><span class="muted" id="wHint">Practice answers come back in a few minutes.</span></div>
         <div class="result" id="result" hidden></div>
       </div>
-      <div class="gate glass glass-ink" id="gate">
+      <div class="gate glass glass-paper" id="gate">
         <i class="mascot" aria-hidden="true"></i>
         <h3>Sign in to use the checker</h3>
         <p>The checker is part of the student portal. Registered students sign in with their student ID.</p>
         <div class="gate-btns">
-          <button class="btn btn-bone" type="button" data-modal="signin">Sign in</button>
-          <a class="btn btn-glass" href="index.html#register">Register</a>
+          <button class="btn btn-ember" type="button" data-modal="signin">Sign in</button>
+          <a class="btn btn-line" href="index.html#register">Register</a>
         </div>
       </div>
     </div>
@@ -227,16 +291,22 @@
         <a href="https://wa.me/923112004967" target="_blank" rel="noopener" aria-label="WhatsApp 0311 2004967"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg></a>
       </div>
     </div>
+    <div class="nxb">
+      <a class="nxb__id" href="https://nexlyr.solutions/" target="_blank" rel="noopener" aria-label="Nexlyr Solutions, the studio that designed and built this site">
+        <span class="nxb__mk" aria-hidden="true"><svg viewBox="0 0 631 1011" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Nexlyr Solutions logo"><defs><linearGradient id="nxbG" gradientUnits="userSpaceOnUse" x1="277.4" y1="43.9" x2="724.3" y2="114.7"><stop offset="0" stop-color="#01C2F4"/><stop offset="1" stop-color="#0169B3"/></linearGradient></defs><g fill="url(#nxbG)"><rect x="2.5" y="1" width="27.2" height="6.8"/><rect x="70.5" y="1" width="27.2" height="6.8"/><rect x="124.9" y="1" width="88.4" height="6.8"/><rect x="233.7" y="1" width="27.2" height="6.8"/><rect x="294.9" y="1" width="27.2" height="6.8"/><rect x="342.5" y="1" width="27.2" height="6.8"/><rect x="430.9" y="1" width="27.2" height="6.8"/><rect x="492.1" y="1" width="27.2" height="6.8"/><rect x="539.7" y="1" width="74.8" height="6.8"/><rect x="2.5" y="7.8" width="34" height="6.8"/><rect x="70.5" y="7.8" width="27.2" height="6.8"/><rect x="124.9" y="7.8" width="88.4" height="6.8"/><rect x="233.7" y="7.8" width="27.2" height="6.8"/><rect x="294.9" y="7.8" width="27.2" height="6.8"/><rect x="342.5" y="7.8" width="27.2" height="6.8"/><rect x="430.9" y="7.8" width="27.2" height="6.8"/><rect x="492.1" y="7.8" width="27.2" height="6.8"/><rect x="539.7" y="7.8" width="81.6" height="6.8"/><rect x="2.5" y="14.6" width="34" height="6.8"/><rect x="70.5" y="14.6" width="27.2" height="6.8"/><rect x="124.9" y="14.6" width="27.2" height="6.8"/><rect x="233.7" y="14.6" width="34" height="6.8"/><rect x="288.1" y="14.6" width="34" height="6.8"/><rect x="342.5" y="14.6" width="27.2" height="6.8"/><rect x="430.9" y="14.6" width="27.2" height="6.8"/><rect x="492.1" y="14.6" width="27.2" height="6.8"/><rect x="539.7" y="14.6" width="27.2" height="6.8"/><rect x="600.9" y="14.6" width="27.2" height="6.8"/><rect x="2.5" y="21.4" width="40.8" height="6.8"/><rect x="70.5" y="21.4" width="27.2" height="6.8"/><rect x="124.9" y="21.4" width="27.2" height="6.8"/><rect x="240.5" y="21.4" width="34" height="6.8"/><rect x="281.3" y="21.4" width="34" height="6.8"/><rect x="342.5" y="21.4" width="27.2" height="6.8"/><rect x="430.9" y="21.4" width="27.2" height="6.8"/><rect x="492.1" y="21.4" width="27.2" height="6.8"/><rect x="539.7" y="21.4" width="27.2" height="6.8"/><rect x="600.9" y="21.4" width="27.2" height="6.8"/><rect x="2.5" y="28.2" width="47.6" height="6.8"/><rect x="70.5" y="28.2" width="27.2" height="6.8"/><rect x="124.9" y="28.2" width="27.2" height="6.8"/><rect x="247.3" y="28.2" width="61.2" height="6.8"/><rect x="342.5" y="28.2" width="27.2" height="6.8"/><rect x="437.7" y="28.2" width="27.2" height="6.8"/><rect x="485.3" y="28.2" width="27.2" height="6.8"/><rect x="539.7" y="28.2" width="27.2" height="6.8"/><rect x="600.9" y="28.2" width="27.2" height="6.8"/><rect x="2.5" y="35" width="54.4" height="6.8"/><rect x="70.5" y="35" width="27.2" height="6.8"/><rect x="124.9" y="35" width="27.2" height="6.8"/><rect x="254.1" y="35" width="47.6" height="6.8"/><rect x="342.5" y="35" width="27.2" height="6.8"/><rect x="444.5" y="35" width="27.2" height="6.8"/><rect x="478.5" y="35" width="27.2" height="6.8"/><rect x="539.7" y="35" width="27.2" height="6.8"/><rect x="600.9" y="35" width="27.2" height="6.8"/><rect x="2.5" y="41.8" width="27.2" height="6.8"/><rect x="36.5" y="41.8" width="27.2" height="6.8"/><rect x="70.5" y="41.8" width="27.2" height="6.8"/><rect x="124.9" y="41.8" width="81.6" height="6.8"/><rect x="260.9" y="41.8" width="34" height="6.8"/><rect x="342.5" y="41.8" width="27.2" height="6.8"/><rect x="451.3" y="41.8" width="47.6" height="6.8"/><rect x="539.7" y="41.8" width="27.2" height="6.8"/><rect x="600.9" y="41.8" width="27.2" height="6.8"/><rect x="2.5" y="48.6" width="27.2" height="6.8"/><rect x="36.5" y="48.6" width="27.2" height="6.8"/><rect x="70.5" y="48.6" width="27.2" height="6.8"/><rect x="124.9" y="48.6" width="81.6" height="6.8"/><rect x="260.9" y="48.6" width="34" height="6.8"/><rect x="342.5" y="48.6" width="27.2" height="6.8"/><rect x="458.1" y="48.6" width="34" height="6.8"/><rect x="539.7" y="48.6" width="27.2" height="6.8"/><rect x="600.9" y="48.6" width="27.2" height="6.8"/><rect x="2.5" y="55.4" width="27.2" height="6.8"/><rect x="43.3" y="55.4" width="54.4" height="6.8"/><rect x="124.9" y="55.4" width="27.2" height="6.8"/><rect x="254.1" y="55.4" width="47.6" height="6.8"/><rect x="342.5" y="55.4" width="27.2" height="6.8"/><rect x="464.9" y="55.4" width="27.2" height="6.8"/><rect x="539.7" y="55.4" width="81.6" height="6.8"/><rect x="2.5" y="62.2" width="27.2" height="6.8"/><rect x="43.3" y="62.2" width="54.4" height="6.8"/><rect x="124.9" y="62.2" width="27.2" height="6.8"/><rect x="247.3" y="62.2" width="61.2" height="6.8"/><rect x="342.5" y="62.2" width="27.2" height="6.8"/><rect x="464.9" y="62.2" width="27.2" height="6.8"/><rect x="539.7" y="62.2" width="74.8" height="6.8"/><rect x="2.5" y="69" width="27.2" height="6.8"/><rect x="50.1" y="69" width="47.6" height="6.8"/><rect x="124.9" y="69" width="27.2" height="6.8"/><rect x="240.5" y="69" width="34" height="6.8"/><rect x="281.3" y="69" width="34" height="6.8"/><rect x="342.5" y="69" width="27.2" height="6.8"/><rect x="464.9" y="69" width="27.2" height="6.8"/><rect x="539.7" y="69" width="27.2" height="6.8"/><rect x="580.5" y="69" width="34" height="6.8"/><rect x="2.5" y="75.8" width="27.2" height="6.8"/><rect x="56.9" y="75.8" width="40.8" height="6.8"/><rect x="124.9" y="75.8" width="27.2" height="6.8"/><rect x="233.7" y="75.8" width="34" height="6.8"/><rect x="288.1" y="75.8" width="34" height="6.8"/><rect x="342.5" y="75.8" width="27.2" height="6.8"/><rect x="464.9" y="75.8" width="27.2" height="6.8"/><rect x="539.7" y="75.8" width="27.2" height="6.8"/><rect x="587.3" y="75.8" width="34" height="6.8"/><rect x="2.5" y="82.6" width="27.2" height="6.8"/><rect x="63.7" y="82.6" width="34" height="6.8"/><rect x="124.9" y="82.6" width="88.4" height="6.8"/><rect x="233.7" y="82.6" width="27.2" height="6.8"/><rect x="294.9" y="82.6" width="27.2" height="6.8"/><rect x="342.5" y="82.6" width="88.4" height="6.8"/><rect x="464.9" y="82.6" width="27.2" height="6.8"/><rect x="539.7" y="82.6" width="27.2" height="6.8"/><rect x="594.1" y="82.6" width="34" height="6.8"/><rect x="2.5" y="89.4" width="27.2" height="6.8"/><rect x="70.5" y="89.4" width="27.2" height="6.8"/><rect x="124.9" y="89.4" width="88.4" height="6.8"/><rect x="233.7" y="89.4" width="27.2" height="6.8"/><rect x="294.9" y="89.4" width="27.2" height="6.8"/><rect x="342.5" y="89.4" width="88.4" height="6.8"/><rect x="464.9" y="89.4" width="27.2" height="6.8"/><rect x="539.7" y="89.4" width="27.2" height="6.8"/><rect x="600.9" y="89.4" width="27.2" height="6.8"/><rect x="0" y="128" width="98.5" height="883"/><rect x="133.25" y="128" width="98.5" height="883"/><rect x="266.5" y="128" width="98.5" height="883"/><rect x="399.75" y="128" width="98.5" height="630"/><rect x="533" y="128" width="98.5" height="630"/></g></svg></span>
+        <span class="nxb__tx"><span class="nxb__kk">Designed &amp; built by</span><span class="nxb__nm">Nexlyr Solutions</span></span>
+      </a>
+      <a class="nxb__go" target="_blank" rel="noopener" href="https://wa.me/923053687680?text=Hi%20Nexlyr%21%20I%20saw%20Sir%20Xahid%20Anwar%27s%20website%20and%20I%27d%20like%20a%20site%20like%20it." aria-label="Connect with Nexlyr Solutions on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg> Connect</a>
+    </div>
     <div class="foot-bottom">
       <span>© 2026 Sir Xahid Anwar. Cambridge syllabus codes and past papers belong to Cambridge University Press &amp; Assessment.</span>
-      <span>Website by <a href="https://nexlyr.solutions/" target="_blank" rel="noopener">Nexlyr Solutions</a></span>
     </div>
   </div>
 </footer>
 <button class="chat-fab" type="button" id="chatFab" aria-controls="chat" aria-expanded="false" data-sfx="none">
   <span class="lbl">Ask Sir X</span><span class="av"><i class="mascot"></i></span><span class="dot" aria-hidden="true"></span>
 </button>
-<section class="chat glass glass-ink" id="chat" aria-label="Ask Sir X assistant" aria-hidden="true">
+<section class="chat glass" id="chat" aria-label="Ask Sir X assistant" aria-hidden="true">
   <header class="chat-head">
     <span class="av"><i class="mascot"></i></span>
     <div><b>Ask Sir X</b><small>Answers instantly</small></div>
@@ -247,6 +317,21 @@
   <form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Ask about fees, campuses, books..." autocomplete="off" aria-label="Type your question"><button type="submit" aria-label="Send" data-sfx="none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button></form>
   <a class="chat-wa" href="https://wa.me/923112004967?text=Assalam%20o%20Alaikum%20Sir%2C%20I%20want%20to%20ask%20about%20English%20classes." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg> Talk to the team on WhatsApp</a>
 </section>
+<div class="modal promo" id="promo" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+  <div class="modal-box promo-box" tabindex="-1" data-autofocus>
+    <button class="modal-close" type="button" aria-label="Close">×</button>
+    <i class="mascot promo-mascot" aria-hidden="true"></i>
+    <span class="promo-tag"><span class="dot"></span>Admissions open · May/June 2027</span>
+    <h3 id="promoTitle">Join Sir Xahid's English batch</h3>
+    <p>Seats fill up at every campus. Register now and get your portal login, Sir's notes, timed papers and AI essay checking.</p>
+    <ul class="promo-codes"><li>1123</li><li>0500</li><li>0510</li><li>0511</li></ul>
+    <div class="promo-btns">
+      <a class="btn btn-ember" href="index.html#register" data-promo-go>Register now</a>
+      <a class="btn btn-line" href="https://wa.me/923112004967?text=Assalam%20o%20Alaikum%20Sir%2C%20I%20want%20to%20register%20for%20English." target="_blank" rel="noopener" data-promo-go><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg> Ask on WhatsApp</a>
+    </div>
+    <button class="link-btn promo-later" type="button" onclick="XA.closeModal(document.getElementById('promo'))">Maybe later</button>
+  </div>
+</div>
 <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Search the site">
   <div class="palette-box glass glass-ink">
     <input id="paletteInput" type="search" placeholder="Search pages, syllabuses, books" autocomplete="off" aria-label="Search">

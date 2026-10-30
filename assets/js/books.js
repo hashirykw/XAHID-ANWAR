@@ -1,7 +1,7 @@
 /* Books page */
 (function () {
   const PRICE = 5000;
-  document.querySelectorAll(".flip").forEach(f => f.addEventListener("click", () => {
+  document.querySelectorAll(".book3d").forEach(f => f.addEventListener("click", () => {
     f.setAttribute("aria-pressed", f.getAttribute("aria-pressed") !== "true"); XA.sfx.pop();
   }));
 

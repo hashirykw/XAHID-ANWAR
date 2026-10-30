@@ -14,7 +14,7 @@
   const wall = document.getElementById("logoWall");
   wall.innerHTML = affils.map(a => {
     const vis = a[1] ? `<img src="assets/img/logos/${a[1]}.webp" alt="" width="60" height="60" loading="lazy">`
-                     : `<span class="mono" style="--c:${a[3]}" aria-hidden="true">${a[2]}</span>`;
+                     : `<span class="mono" style="--c:${a[3]}" aria-hidden="true"><b>${a[2]}</b></span>`;
     return `<li>${vis}<span>${a[0]}</span></li>`;
   }).join("");
   function markExtras() {

@@ -127,7 +127,7 @@ window.XA = (function () {
     if (opener) { e.preventDefault(); openModal(opener.dataset.modal); }
     if (e.target.matches(".modal") || e.target.closest(".modal-close")) closeModal(e.target.closest(".modal"));
   });
-  function openModal(id) { const m = document.getElementById(id); if (!m) return; sfx.open(); m.classList.add("open"); const f = m.querySelector("input,button:not(.modal-close)"); if (f) setTimeout(() => f.focus(), 30); }
+  function openModal(id) { const m = document.getElementById(id); if (!m) return; sfx.open(); m.classList.add("open"); const f = m.querySelector("[data-autofocus]") || m.querySelector("input,button:not(.modal-close)"); if (f) setTimeout(() => f.focus({ preventScroll: true }), 30); }
   function closeModal(m) { if (m && m.classList.contains("open")) { m.classList.remove("open"); sfx.close(); } }
   addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".modal.open").forEach(closeModal); });
 
@@ -143,7 +143,7 @@ window.XA = (function () {
     el.addEventListener("submit", e => {
       e.preventDefault(); let first = null;
       el.querySelectorAll("input,select,textarea").forEach(f => { if (f.type === "radio") return; if (!check(f) && !first) first = f; });
-      if (first) { sfx.error(); first.focus(); return; }
+      if (first) { sfx.error(); (first._xbtn || first).focus(); return; }
       sfx.success(); onValid(Object.fromEntries(new FormData(el)));
     });
   }
@@ -192,5 +192,133 @@ window.XA = (function () {
     addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("chat-open")) setChat(false); });
   }
 
-  return { WA, wa, form, isPhone, reduce, openModal, closeModal, sfx };
+  /* ---------- preloader: Sir marks the page, stamps it, then it opens ---------- */
+  (function () {
+    const root = document.documentElement, L = document.getElementById("loader");
+    if (!L || !root.classList.contains("ld")) return;
+    const quick = root.classList.contains("ld-quick");
+    const lines = ["Sharpening the red pen…", "Removing “very very” from your essay…", "Counting your commas…", "Finding a better word than “good”…", "Checking you used your own words…"];
+    const num = document.getElementById("ldNum"), line = document.getElementById("ldLine");
+    const target = 25, dur = reduce ? 200 : quick ? 700 : 2100, t0 = performance.now();
+    let li = 0; const swap = () => { line.innerHTML = `<span>${lines[li++ % lines.length]}</span>`; };
+    swap(); const lt = quick ? null : setInterval(swap, 520);
+    let loaded = document.readyState === "complete"; addEventListener("load", () => loaded = true);
+    function step(now) {
+      const k = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - k, 3);
+      num.textContent = Math.round(e * target);
+      if (k < 1 || !loaded && now - t0 < 4500) return requestAnimationFrame(step);
+      clearInterval(lt); line.innerHTML = "<span>Band 5. Approved by Sir.</span>"; L.classList.add("done");
+      setTimeout(finish, quick ? 350 : 750);
+    }
+    function finish() { L.classList.add("out"); setTimeout(() => { root.classList.remove("ld", "ld-quick"); L.remove(); document.dispatchEvent(new Event("xa:ready")); }, reduce ? 0 : 900); try { sessionStorage.setItem("xa-ld", "1"); } catch (e) {} }
+    requestAnimationFrame(step);
+    const sk = document.getElementById("ldSkip"); if (sk) sk.addEventListener("click", () => { clearInterval(lt); finish(); });
+  })();
+  const whenReady = fn => document.getElementById("loader") && document.documentElement.classList.contains("ld") ? document.addEventListener("xa:ready", fn, { once: true }) : fn();
+
+  /* ---------- motion buttons: rolling label, arrow that slides through, colour flood ---------- */
+  const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  function enhanceBtn(b) {
+    if (b.classList.contains("btn-x") || b.hasAttribute("data-plain") || b.closest(".nxb")) return;
+    const svg = b.querySelector("svg"), label = b.textContent.trim().replace(/\s+/g, " ");
+    if (!label) return;
+    const icon = svg ? svg.outerHTML : ARROW, esc = label.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    b.innerHTML = `<span class="btn-l"><span>${esc}</span><span aria-hidden="true">${esc}</span></span><span class="btn-fill" aria-hidden="true"></span><span class="btn-i" aria-hidden="true">${icon}${icon}</span>`;
+    b.classList.add("btn-x");
+  }
+  document.querySelectorAll(".btn").forEach(enhanceBtn);
+
+  /* ---------- themed dropdowns: native select stays in the form, a styled list sits on top ---------- */
+  const CHEV = '<svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l5 5 5-5"/></svg>';
+  function enhanceSelect(sel) {
+    if (sel._x) return sel._x.sync();
+    const wrap = document.createElement("div"); wrap.className = "xsel";
+    sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel); sel.tabIndex = -1; sel.setAttribute("aria-hidden", "true");
+    const btn = document.createElement("button"); btn.type = "button"; btn.className = "xsel-btn"; btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-expanded", "false");
+    if (sel.id) { const lb = document.querySelector(`label[for="${sel.id}"]`); if (lb) { lb.id = lb.id || sel.id + "-lb"; btn.setAttribute("aria-labelledby", lb.id + " " + sel.id + "-v"); lb.addEventListener("click", e => { e.preventDefault(); btn.focus(); }); } }
+    const list = document.createElement("ul"); list.className = "xsel-list"; list.setAttribute("role", "listbox"); list.tabIndex = -1;
+    wrap.append(btn, list); sel._xbtn = btn;
+    let act = -1;
+    function build() {
+      list.innerHTML = [...sel.options].map((o, i) => `<li role="option" data-i="${i}" aria-selected="${o.selected && o.value !== "" ? "true" : "false"}"${o.value === "" ? " data-empty" : ""}>${o.textContent}</li>`).join("");
+      sync();
+    }
+    function sync() {
+      const o = sel.options[sel.selectedIndex];
+      btn.innerHTML = `<span id="${sel.id ? sel.id + "-v" : ""}" class="${!o || o.value === "" ? "ph" : ""}">${o ? o.textContent : ""}</span>${CHEV}`;
+      list.querySelectorAll("li").forEach((li, i) => li.setAttribute("aria-selected", i === sel.selectedIndex && sel.value !== "" ? "true" : "false"));
+    }
+    function open() {
+      document.querySelectorAll(".xsel.open").forEach(x => x !== wrap && x._close());
+      const r = btn.getBoundingClientRect(); wrap.classList.toggle("up", innerHeight - r.bottom < 260 && r.top > 300);
+      wrap.classList.add("open"); btn.setAttribute("aria-expanded", "true"); act = Math.max(0, sel.selectedIndex); mark(); sfx.open();
+      const cur = list.children[act]; if (cur) cur.scrollIntoView({ block: "nearest" });
+    }
+    function close(focus) { if (!wrap.classList.contains("open")) return; wrap.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); if (focus) btn.focus(); }
+    wrap._close = close;
+    function mark() { list.querySelectorAll("li").forEach((li, i) => li.classList.toggle("act", i === act)); const c = list.children[act]; if (c) c.scrollIntoView({ block: "nearest" }); }
+    function pick(i) { if (i < 0 || i >= sel.options.length) return; sel.selectedIndex = i; sync(); sel.dispatchEvent(new Event("change", { bubbles: true })); const f = sel.closest(".field"); if (f && sel.value) f.classList.remove("invalid"); sfx.pop(); close(true); }
+    btn.addEventListener("click", e => { e.stopPropagation(); wrap.classList.contains("open") ? close() : open(); });
+    btn.setAttribute("data-sfx", "none");
+    list.addEventListener("click", e => { const li = e.target.closest("li"); if (li) { e.stopPropagation(); pick(+li.dataset.i); } });
+    btn.addEventListener("keydown", e => {
+      const isOpen = wrap.classList.contains("open");
+      if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key) && !isOpen) { e.preventDefault(); open(); return; }
+      if (!isOpen) return;
+      if (e.key === "ArrowDown") { e.preventDefault(); act = Math.min(act + 1, sel.options.length - 1); mark(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); act = Math.max(act - 1, 0); mark(); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(act); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(true); }
+      else if (e.key === "Tab") close();
+      else if (e.key.length === 1) { const k = e.key.toLowerCase(), n = [...sel.options].findIndex((o, i) => i > act && o.textContent.toLowerCase().startsWith(k)); if (n > -1) { act = n; mark(); } }
+    });
+    new MutationObserver(build).observe(sel, { childList: true, subtree: true });
+    sel.addEventListener("change", sync);
+    const f = sel.form; if (f) f.addEventListener("reset", () => setTimeout(sync, 0));
+    sel._x = { sync, build }; build();
+  }
+  document.querySelectorAll(".field select").forEach(enhanceSelect);
+  document.addEventListener("click", () => document.querySelectorAll(".xsel.open").forEach(x => x._close()));
+  const refreshSelects = () => document.querySelectorAll(".field select").forEach(enhanceSelect);
+
+  /* new buttons and selects added later (rendered lists) get the same treatment */
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => {
+    if (n.nodeType !== 1) return;
+    if (n.matches && n.matches(".btn")) enhanceBtn(n);
+    n.querySelectorAll && n.querySelectorAll(".btn").forEach(enhanceBtn);
+    n.querySelectorAll && n.querySelectorAll(".field select").forEach(enhanceSelect);
+  }))).observe(document.body, { childList: true, subtree: true });
+
+  /* ---------- 3D tilt with a soft light glare on cards (mouse only) ---------- */
+  const TILT = ".tile,.course,.pcard,.xcard,.mode,.flow-step,.card,.book,.tilt";
+  if (matchMedia("(pointer:fine)").matches && !reduce) {
+    let cur = null;
+    document.addEventListener("pointermove", e => {
+      const el = e.target.closest(TILT);
+      if (cur && cur !== el) { cur.style.transform = ""; cur.classList.remove("tilting"); cur = null; }
+      if (!el || el.closest(".modal,.viewer,.exam,.chat")) return;
+      cur = el; el.classList.add("tilting");
+      if (!el.querySelector(":scope > .glare")) { const g = document.createElement("span"); g.className = "glare"; g.setAttribute("aria-hidden", "true"); el.appendChild(g); }
+      const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      const max = r.width > 520 ? 3 : 6;
+      el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * max}deg) rotateY(${(x - 0.5) * max}deg) translateZ(0)`;
+      el.style.setProperty("--gx", x * 100 + "%"); el.style.setProperty("--gy", y * 100 + "%");
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => { if (cur) { cur.style.transform = ""; cur.classList.remove("tilting"); cur = null; } });
+  }
+
+  /* ---------- "register now" pop-up: once per visit, after the page has opened ---------- */
+  const promo = document.getElementById("promo");
+  if (promo) whenReady(() => {
+    let seen = false; try { seen = sessionStorage.getItem("xa-promo"); } catch (e) {}
+    const signed = (() => { try { return localStorage.getItem("xa-student"); } catch (e) { return null; } })();
+    if (seen || signed || /portal\.html/.test(location.pathname)) return;
+    setTimeout(() => {
+      if (document.body.classList.contains("exam-on") || document.querySelector(".modal.open,.viewer:not([hidden])")) return;
+      openModal("promo"); sfx.success(); try { sessionStorage.setItem("xa-promo", "1"); } catch (e) {}
+    }, 3200);
+    promo.addEventListener("click", e => { if (e.target.closest("[data-promo-go]")) closeModal(promo); });
+  });
+
+  return { WA, wa, form, isPhone, reduce, openModal, closeModal, sfx, refreshSelects };
 })();
