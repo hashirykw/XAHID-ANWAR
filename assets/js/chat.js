@@ -54,6 +54,8 @@
       a: () => ({ t: "Every 1123, 0500, 0510 and 0511 paper opens on the site with its mark scheme beside it, free for everyone. Timed mode locks the screen until time is up, and there are XA practice papers written for Sir's students.", act: [go("Find a paper", "/past-papers"), go("XA practice papers", "/past-papers#practice")], chips: ["ai", "books"] }) },
     { id: "register", title: "Register", icon: "user", k: { register: 3, registration: 3, admission: 3, admissions: 3, join: 3, enrol: 3, enroll: 3, apply: 2, seat: 2, seats: 2, start: 1, dakhla: 3 },
       a: () => ({ t: "Admissions are open for May/June 2027. Fill in the short form and WhatsApp opens with your details ready to send. Sir's team confirms your campus, batch and fee, then sends your portal login.", act: [go("Fill in the form", "/#register"), wa("I want to register for English.")], chips: ["fees", "campus"] }) },
+    { id: "slip", title: "Already at a campus?", icon: "key", k: { already: 3, enrolled: 3, studying: 2, existing: 3, slip: 4, "fee card": 4, card: 1, receipt: 3, transfer: 3, paid: 3, "fee slip": 4, proof: 3, screenshot: 2, easypaisa: 3, jazzcash: 3 },
+      a: () => ({ t: "If you already study at one of Sir's campuses or online batches, you don't need to register again. Upload a photo of your fee card or your online transfer slip and Sir's team will send your portal login on WhatsApp.", act: [go("Upload your fee slip", "/portal#verify")], chips: ["portal", "campus"] }) },
     { id: "sir", title: "About Sir Xahid", icon: "user", k: { who: 2, sir: 1, xahid: 2, anwar: 2, teacher: 2, about: 2, experience: 2, method: 2 },
       a: () => ({ t: "Sir Xahid Anwar teaches Cambridge English Language for O Level and IGCSE. Mornings he teaches in school classrooms, evenings at academies across Karachi, and online wherever his students are. His method is three words: read, write, repeat.", act: [go("Meet Sir Xahid", "/#about")], chips: ["campus", "youtube"] }) },
     { id: "youtube", title: "Free lessons", icon: "globe", k: { youtube: 3, "professor ex": 4, video: 2, videos: 2, lecture: 2, lectures: 2, free: 1, lesson: 2, lessons: 2 },
@@ -66,7 +68,7 @@
       a: () => ({ t: "Anytime. Read, write, repeat!", chips: ["register", "books"] }) }
   ];
   const byId = Object.fromEntries(INTENTS.map(i => [i.id, i]));
-  const START = ["fees", "campus", "books", "portal", "ai", "papers", "register", "online"];
+  const START = ["fees", "campus", "books", "portal", "slip", "papers", "register", "online"];
 
   function norm(s) { return " " + s.toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim() + " "; }
   function match(q) {

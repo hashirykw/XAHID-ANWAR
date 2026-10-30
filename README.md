@@ -27,7 +27,7 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - `assets/js/main.js` shared behaviour: nav, menu, search (Ctrl K), sound effects, modals, motion buttons, dropdowns, form helpers
 - `assets/js/chat.js` the assistant: builds its own markup, keeps the conversation while you move between pages, hands anything it can't answer to WhatsApp
 - `assets/js/pwa.js` + `assets/css/pwa.css` the installable app: registers `sw.js` and shows the "Get the app" pop-up (one "Install the app" button: installs directly on Android/Chrome/Edge, opens the Share menu on iPhone since Apple only allows installing from there). It waits until the visitor has looked around, never covers the chat or a form, and stays away for 7 days after "Not now". The footer's "Get the app" link opens it any time
-- `assets/js/<page>.js` one script per page
+- `assets/js/<page>.js` one script per page. `portal.js` also holds the "already at a campus" fee-slip upload: set `VERIFY_ENDPOINT` to the backend URL to start receiving slips (until then the upload is simulated and the file never leaves the phone)
 - `assets/img/` photos, mascot and logo (SVG), `logos/` affiliations, `books/` covers
 
 ## App and sharing

@@ -199,3 +199,11 @@ a.t-ai:hover .peek{transform:rotate(-4deg) translateY(-3px)}
 @keyframes coinShadow{0%,38%,50%,88%,100%{transform:scaleX(1)}44%,94%{transform:scaleX(.4)}}
 @media (max-width:899px){.coin-stage{top:-14px;width:84px}.courses .section-head h2{padding-right:92px}}
 @media (prefers-reduced-motion:reduce){.coin,.coin-shadow,.coin .face::before{animation:none}}
+
+.slip-link{display:flex;align-items:center;gap:12px;margin-top:22px;padding:14px 16px 14px 14px;border-radius:18px;text-decoration:none;color:#fff;background:rgba(26,20,16,.26);border:1px solid rgba(255,255,255,.24);font-size:.92rem;line-height:1.4;max-width:520px;transition:background .3s,border-color .3s}
+.slip-link:hover{background:rgba(26,20,16,.4);border-color:rgba(255,255,255,.45)}
+.slip-link b{display:block;font-weight:700}
+.slip-link .as-ic{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--bone-2);color:var(--ember-deep)}
+.slip-link .as-ic svg{width:19px;height:19px}
+.slip-link .as-go{width:18px;height:18px;flex:none;margin-left:auto;transition:transform .35s var(--ease-o)}
+.slip-link:hover .as-go{transform:translateX(3px)}

@@ -106,4 +106,67 @@
     clearTimeout(soT); soReset(); set(null); show(null); scrollTo(0, 0); XA.sfx.close();
   });
   show(get());
+
+  /* ---------- already at a campus: send a fee card / transfer slip ----------
+     No backend yet: the file stays in the browser and is discarded after the "upload".
+     When the backend is ready, set VERIFY_ENDPOINT to the URL that accepts the form (multipart). */
+  const VERIFY_ENDPOINT = null;
+  const vf = document.getElementById("verifyForm");
+  if (vf) {
+    const CAMPUSES = ["Online batch", "The Professionals Core", "Success Institute", "EVO Institute", "Panwala Institute", "The Caspian Institute", "Brainiacs Digital Academy",
+      "NexGen-Ed", "Neogen", "MAX Academy", "Orb-Ed", "Class-Inn", "ed-360", "Siddiqui Tutor Academy", "The Taurus School", "The American Foundation Cambridge School",
+      "Kashan's Academy", "Gives Academy", "The Cedar School", "TAFS", "BSS", "Nexus", "Brighton", "Bodmas", "SKH Solutions", "SWK Solution", "Askari Bahadurabad", "MAB Academy", "Other"];
+    const cs = document.getElementById("v-campus");
+    CAMPUSES.forEach(n => { const o = document.createElement("option"); o.textContent = n; cs.appendChild(o); });
+    if (XA.refreshSelects) XA.refreshSelects();
+
+    const file = document.getElementById("v-file"), drop = document.getElementById("drop"), box = document.getElementById("dropBox");
+    const thumb = document.getElementById("dropThumb"), fname = document.getElementById("dropName"), fsize = document.getElementById("dropSize"), ferr = document.getElementById("dropErr");
+    const MAX = 10 * 1024 * 1024, OK = /^(image\/|application\/pdf)/;
+    let url = null;
+    const kb = n => n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+    function bad(msg) { ferr.textContent = msg; box.classList.add("invalid"); XA.sfx.error(); }
+    function pick() {
+      const f = file.files && file.files[0];
+      if (url) { URL.revokeObjectURL(url); url = null; }
+      drop.classList.toggle("has", !!f); drop.querySelector(".drop-file").hidden = !f;
+      if (!f) return;
+      if (!OK.test(f.type)) { file.value = ""; drop.classList.remove("has"); drop.querySelector(".drop-file").hidden = true; return bad("That file type won't work. Use a photo (JPG, PNG) or a PDF."); }
+      if (f.size > MAX) { file.value = ""; drop.classList.remove("has"); drop.querySelector(".drop-file").hidden = true; return bad("That file is over 10 MB. Try a smaller photo or a screenshot."); }
+      box.classList.remove("invalid"); ferr.textContent = "Add a photo of your fee card or transfer slip.";
+      fname.textContent = f.name; fsize.textContent = kb(f.size) + " · ready to send";
+      if (f.type.startsWith("image/")) { url = URL.createObjectURL(f); thumb.style.backgroundImage = `url("${url}")`; thumb.textContent = ""; }
+      else { thumb.style.backgroundImage = ""; thumb.textContent = "PDF"; }
+      XA.sfx.pop();
+    }
+    if (matchMedia("(pointer:fine)").matches) drop.querySelector(".drop-empty b").textContent = "Click to choose a file, or drop it here";
+    file.addEventListener("change", pick);
+    ["dragenter", "dragover"].forEach(t => drop.addEventListener(t, () => drop.classList.add("over")));
+    ["dragleave", "drop"].forEach(t => drop.addEventListener(t, () => drop.classList.remove("over")));
+
+    function send(data) {
+      if (VERIFY_ENDPOINT) return fetch(VERIFY_ENDPOINT, { method: "POST", body: data }).then(r => { if (!r.ok) throw new Error("upload failed"); });
+      /* for now the upload is simulated: nothing leaves the device */
+      return new Promise(res => {
+        let p = 0; const iv = setInterval(() => { p = Math.min(100, p + 7 + Math.random() * 12); vf.style.setProperty("--vp", p + "%"); vf.querySelector(".v-progress i").style.width = p + "%"; if (p >= 100) { clearInterval(iv); setTimeout(res, 250); } }, 110);
+      });
+    }
+    XA.form(vf, {
+      name: v => v.trim().length > 1, phone: XA.isPhone, campus: v => !!v, syllabus: v => !!v,
+      proof: () => !!(file.files && file.files[0])
+    }, () => {
+      const data = new FormData(vf);
+      vf.classList.add("sending");
+      send(data).then(() => {
+        vf.classList.remove("sending"); vf.classList.add("sent");
+        document.getElementById("vDoneNum").textContent = data.get("phone");
+        if (url) { URL.revokeObjectURL(url); url = null; }
+        vf.scrollIntoView({ behavior: XA.reduce ? "auto" : "smooth", block: "center" });
+      }).catch(() => { vf.classList.remove("sending"); bad("The upload didn't go through. Check your internet and try again."); });
+    });
+    document.getElementById("verifyAgain").addEventListener("click", () => {
+      vf.reset(); vf.classList.remove("sent"); pick(); vf.querySelector(".v-progress i").style.width = "0%";
+      vf.querySelectorAll(".field.invalid").forEach(f => f.classList.remove("invalid"));
+    });
+  }
 })();

@@ -140,7 +140,12 @@ window.XA = (function () {
       const box = f.closest(".field"); if (box) box.classList.toggle("invalid", !ok);
       f.setAttribute("aria-invalid", !ok); return ok;
     }
-    el.querySelectorAll("input,select,textarea").forEach(f => f.addEventListener("blur", () => { if (f.value) check(f); }));
+    el.querySelectorAll("input,select,textarea").forEach(f => {
+      f.addEventListener("blur", () => { if (f.value) check(f); });
+      /* clear an error the moment it's fixed, so the form doesn't jump when you tap the next field */
+      const live = () => { const box = f.closest(".field"); if (box && box.classList.contains("invalid")) check(f); };
+      f.addEventListener("input", live); f.addEventListener("change", live);
+    });
     el.addEventListener("submit", e => {
       e.preventDefault(); let first = null;
       el.querySelectorAll("input,select,textarea").forEach(f => { if (f.type === "radio") return; if (!check(f) && !first) first = f; });

@@ -95,8 +95,61 @@
           <button class="btn btn-glass" type="button" id="demoBtn">Try the demo student</button>
         </div>
         <p class="auth-foot">One ID works on up to 2 devices. <a href="https://wa.me/923112004967?text=Assalam%20o%20Alaikum%2C%20I%20need%20my%20portal%20login." target="_blank" rel="noopener">Lost your login?</a> · <a href="/#register">Not registered yet?</a></p>
+        <a class="auth-slip" href="#verify"><span class="as-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l4 4v16H6z"/><path d="M9 12h7M9 16h5"/></svg></span><span><b>Already at a campus?</b> Get your login with your fee slip</span><svg class="as-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </form>
     </div>
+  </div>
+</section>
+
+<section class="section verify" id="verify" aria-labelledby="verify-title">
+  <div class="wrap verify-grid">
+    <div class="verify-copy">
+      <span class="verify-tag">For students already at a campus</span>
+      <h2 id="verify-title">Already at a campus? Get your login with your fee slip</h2>
+      <p class="lede">If you already attend one of Sir's campuses or online batches, you don't need to register again. Send a photo of your fee card or your online transfer slip and Sir's team will set up your portal.</p>
+      <ol class="v-steps">
+        <li><b>Upload your proof</b><span>A clear photo of your fee card, or a screenshot of the bank or wallet transfer.</span></li>
+        <li><b>Sir's team checks it</b><span>They match it with your campus and batch.</span></li>
+        <li><b>Your login arrives on WhatsApp</b><span>Student ID, password and the portal link, sent to the number you give.</span></li>
+      </ol>
+    </div>
+    <form class="verify-card" id="verifyForm" novalidate>
+      <div class="form-grid two">
+        <div class="field"><label for="v-name">Student name</label><input id="v-name" name="name" autocomplete="name" required><span class="err">Enter the student's name.</span></div>
+        <div class="field"><label for="v-phone">WhatsApp number</label><input id="v-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required><span class="err">Enter the number the login should go to.</span></div>
+        <div class="field"><label for="v-campus">Campus</label><select id="v-campus" name="campus" required><option value="">Choose your campus</option></select><span class="err">Choose your campus, or "Online".</span></div>
+        <div class="field"><label for="v-syl">Syllabus</label><select id="v-syl" name="syllabus" required><option value="">Choose a syllabus</option><option>O Level 1123</option><option>IGCSE 0500</option><option>IGCSE 0510</option><option>IGCSE 0511</option></select><span class="err">Choose a syllabus.</span></div>
+        <div class="field full"><span class="label">What are you uploading?</span>
+          <div class="seg" id="vType"><label><input type="radio" name="type" value="Fee card" checked><span>Fee card</span></label><label><input type="radio" name="type" value="Online transfer slip"><span>Online transfer slip</span></label></div></div>
+        <div class="field full" id="dropBox">
+          <span class="label" id="drop-lb">Photo or screenshot</span>
+          <label class="drop" for="v-file" id="drop" aria-describedby="drop-lb">
+            <input id="v-file" name="proof" type="file" accept="image/*,application/pdf" required>
+            <span class="drop-empty">
+              <span class="drop-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+              <b>Tap to upload or take a photo</b>
+              <small>JPG, PNG or PDF, up to 10 MB</small>
+            </span>
+            <span class="drop-file" hidden>
+              <span class="drop-thumb" id="dropThumb"></span>
+              <span class="drop-meta"><b id="dropName"></b><small id="dropSize"></small></span>
+              <span class="drop-x" aria-hidden="true">Change</span>
+            </span>
+          </label>
+          <span class="err" id="dropErr">Add a photo of your fee card or transfer slip.</span>
+        </div>
+        <div class="field full"><label for="v-ref">Transaction ID or roll number <small>(optional)</small></label><input id="v-ref" name="ref" placeholder="Helps Sir's team find your payment faster"></div>
+        <div class="field full"><button class="btn btn-ember" type="submit">Send for verification</button></div>
+      </div>
+      <p class="v-note">Your slip is only used to confirm your fee. You can cover card or account numbers before you upload.</p>
+      <div class="v-progress" aria-hidden="true"><i></i></div>
+      <div class="v-done" role="status">
+        <i class="mascot" aria-hidden="true"></i>
+        <h3>Got it, thank you</h3>
+        <p>Sir's team will check your slip and send your student ID and password on WhatsApp to <b id="vDoneNum"></b>.</p>
+        <button class="link-btn" type="button" id="verifyAgain">Send for another student</button>
+      </div>
+    </form>
   </div>
 </section>
 
