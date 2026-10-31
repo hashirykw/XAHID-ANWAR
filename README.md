@@ -24,7 +24,7 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - `assets/css/chat.css` the Ask Sir X assistant (loaded by `chat.js` itself)
 - `assets/css/<page>.css` one stylesheet per page (`home`, `ai`, `portal`, `papers`, `books`)
 - `assets/js/loader.js` preloader, self-contained. It only appears if a page takes longer than ~0.45 s to load, and its ring follows real loading progress
-- `assets/js/main.js` shared behaviour: nav, menu, search (Ctrl K), sound effects, modals, motion buttons, dropdowns, form helpers
+- `assets/js/main.js` shared behaviour: nav, menu, search (Ctrl K), sound effects (including the coin-flip sound, synced to the spinning XA coin), modals, motion buttons, dropdowns, form helpers
 - `assets/js/chat.js` the assistant: builds its own markup, keeps the conversation while you move between pages, hands anything it can't answer to WhatsApp
 - `assets/js/pwa.js` + `assets/css/pwa.css` the installable app: registers `sw.js` and shows the "Get the app" pop-up (one "Install the app" button: installs directly on Android/Chrome/Edge, opens the Share menu on iPhone since Apple only allows installing from there). It waits until the visitor has looked around, never covers the chat or a form, and stays away for 7 days after "Not now". The footer's "Get the app" link opens it any time
 - `assets/js/steps.js` + `assets/css/steps.css` turn any `<form data-steps>` with `.fstep` groups into a short step-by-step form (progress bar, Next/Back, a tick on each finished field, confetti and a drawn tick when sent). Used by the registration, fee-slip and book order forms

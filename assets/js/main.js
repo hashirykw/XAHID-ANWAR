@@ -39,6 +39,33 @@ window.XA = (function () {
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.02);
     }
+    /* coin flip: an airy whoosh that flutters like a spinning coin and pans across with the turn,
+       then a small bright "ting" with a soft knock as it lands on its face. Only after the visitor has touched the page */
+    let unlocked = false, noise = null;
+    ["pointerdown", "keydown", "touchstart"].forEach(ev => addEventListener(ev, () => { unlocked = true; }, { once: true, passive: true, capture: true }));
+    function coin(lag) {
+      if (!on || !unlocked) return; const c = ac(); if (!c || c.state !== "running") return;
+      const t = c.currentTime, L = Math.min(Math.max(lag || 0, 0), 0.3), at = x => t + Math.max(0, x - L);
+      if (!noise) { noise = c.createBuffer(1, Math.floor(c.sampleRate * 1.2), c.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+      const out = c.createGain(); out.gain.value = 1;
+      if (c.createStereoPanner) { const pn = c.createStereoPanner(); pn.pan.setValueAtTime(-0.35, t); pn.pan.linearRampToValueAtTime(0.3, at(1.05)); out.connect(pn).connect(c.destination); } else out.connect(c.destination);
+      const w0 = at(0.04), src = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(), trem = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+      src.buffer = noise; bp.type = "bandpass"; bp.Q.value = 1.3;
+      bp.frequency.setValueAtTime(520, w0); bp.frequency.exponentialRampToValueAtTime(2600, w0 + 0.5); bp.frequency.exponentialRampToValueAtTime(820, w0 + 1);
+      g.gain.setValueAtTime(0.0001, w0); g.gain.exponentialRampToValueAtTime(0.055, w0 + 0.48); g.gain.exponentialRampToValueAtTime(0.0001, w0 + 1.02);
+      trem.gain.value = 0.62; lg.gain.value = 0.38; lfo.frequency.setValueAtTime(8, w0); lfo.frequency.linearRampToValueAtTime(19, w0 + 0.5); lfo.frequency.linearRampToValueAtTime(7, w0 + 1);
+      lfo.connect(lg).connect(trem.gain); src.connect(bp).connect(g).connect(trem).connect(out);
+      src.start(w0); src.stop(w0 + 1.1); lfo.start(w0); lfo.stop(w0 + 1.1);
+      const tt = at(1.0);
+      [[2637, 0.024, 1.15], [2643, 0.014, 1.0], [7278, 0.008, 0.55], [14240, 0.004, 0.28], [1319, 0.01, 0.45]].forEach(([f, v, d]) => {
+        const o = c.createOscillator(), e = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(f, tt);
+        e.gain.setValueAtTime(0.0001, tt); e.gain.exponentialRampToValueAtTime(v, tt + 0.004); e.gain.exponentialRampToValueAtTime(0.0001, tt + d);
+        o.connect(e).connect(out); o.start(tt); o.stop(tt + d + 0.02);
+      });
+      const k = c.createOscillator(), kg = c.createGain(); k.type = "triangle"; k.frequency.setValueAtTime(210, tt); k.frequency.exponentialRampToValueAtTime(115, tt + 0.07);
+      kg.gain.setValueAtTime(0.0001, tt); kg.gain.exponentialRampToValueAtTime(0.035, tt + 0.006); kg.gain.exponentialRampToValueAtTime(0.0001, tt + 0.09);
+      k.connect(kg).connect(out); k.start(tt); k.stop(tt + 0.1);
+    }
     const api = {
       tap: () => tone(620, 880, 0.07, 0.05, "sine"),
       hover: () => tone(1500, 1400, 0.03, 0.012, "sine"),
@@ -50,11 +77,41 @@ window.XA = (function () {
       error: () => { tone(200, 150, 0.12, 0.06, "square"); tone(180, 130, 0.14, 0.05, "square", 0.14); },
       bell: () => [880, 660, 880].forEach((f, i) => tone(f, f * 0.98, 0.9, 0.07, "sine", i * 0.35)),
       tick: () => tone(1800, 0, 0.02, 0.02, "square"),
+      coin: lag => coin(lag),
       get on() { return on; },
       set(v) { on = v; try { localStorage.setItem("xa-sfx", v ? "on" : "off"); } catch (e) {} document.documentElement.classList.toggle("muted-sfx", !v); }
     };
     document.documentElement.classList.toggle("muted-sfx", !on);
     return api;
+  })();
+  /* the coin on screen makes its sound at each flip (avatar -> logo, logo -> avatar), in time with the turn.
+     If several coins are visible, only the biggest one plays, so they never talk over each other */
+  (function coinSound() {
+    if (reduce || !Element.prototype.getAnimations) return;
+    const SPIN = 9000, FLIPS = [3240, 7740]; /* 36% and 86% of the 9s xcSpin cycle: where each flip starts */
+    const prev = new WeakMap();
+    function pick() {
+      let best = null, bw = 0;
+      document.querySelectorAll(".xcoin .xc-in").forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.width < 24 || r.bottom < innerHeight * 0.06 || r.top > innerHeight * 0.94 || r.right < 0 || r.left > innerWidth) return;
+        if (el.checkVisibility && !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return;
+        if (r.width > bw) { bw = r.width; best = el; }
+      });
+      return best;
+    }
+    setInterval(() => {
+      if (document.hidden || !sfx.on) return;
+      const el = pick(); if (!el) return;
+      const a = el.getAnimations().find(x => x.animationName === "xcSpin"); if (!a || a.currentTime == null) return;
+      const now = performance.now(), t = ((a.currentTime % SPIN) + SPIN) % SPIN, q = prev.get(el); prev.set(el, { t, now });
+      if (!q || now - q.now > 400) return; /* this coin just came into view or took over: start listening from here */
+      const p = q.t;
+      for (const f of FLIPS) {
+        const crossed = p <= t ? (p < f && f <= t) : (p < f || f <= t), lag = (((t - f) + SPIN) % SPIN) / 1000;
+        if (crossed && lag < 0.4) { sfx.coin(lag); break; }
+      }
+    }, 90);
   })();
   const sb = document.getElementById("soundBtn");
   if (sb) {
