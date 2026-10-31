@@ -4,7 +4,7 @@
   const get = () => { try { return JSON.parse(localStorage.getItem("xa-student")); } catch (e) { return null; } };
   const set = s => { try { s ? localStorage.setItem("xa-student", JSON.stringify(s)) : localStorage.removeItem("xa-student"); } catch (e) {} };
 
-  const TEST_VIDEO = "nAgv3y3sZ0M"; /* Cambridge: changes to O Level English Language 1123 */
+  const TEST_VIDEO = "Y97voa617G4"; /* Sir Xahid Anwar sample lecture, used for every lecture until each class has its own video */
   const D = {
     wait: [["Directed writing: school canteen letter", "Test"], ["Composition: The Storm", "Test"]],
     skills: [["Reading", 68], ["Writing", 74], ["Summary", 61]],
