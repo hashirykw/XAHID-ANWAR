@@ -39,6 +39,9 @@
   .hero-copy{padding-bottom:96px}
   .hero-visual{min-height:600px}
   .sticker{left:-8%;top:10%}
+  /* laptops and desktops: on the right shoulder, beside the arm, clear of Sir's face */
+  .gc-admit{top:auto;bottom:34%;right:-4%;max-width:230px}
+  .gc-admit b{white-space:nowrap}
 }
 @media (prefers-reduced-motion:no-preference){
   .hero h1 .tag span{opacity:0;transform:translateY(40%) rotate(-2deg);animation:stamp .7s var(--ease) forwards}
