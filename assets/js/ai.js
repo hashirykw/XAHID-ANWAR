@@ -46,7 +46,7 @@
   function setSignedIn(s) {
     shell.classList.toggle("locked", !s);
     ws.setAttribute("aria-hidden", !s);
-    lede.innerHTML = s ? `Signed in as <span class="signed-chip">${s.name} · ${s.id}</span> <button class="link-btn" type="button" id="so">Sign out</button>` : "Sign in with the student ID Sir's team sent you to start checking.";
+    lede.innerHTML = s ? `Signed in as <span class="signed-chip">${s.name} · ${s.id}</span> <button class="so-btn" type="button" id="so" data-plain aria-label="Sign out of the portal"><span class="so-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg></span>Sign out</button>` : "Sign in with the student ID Sir's team sent you to start checking.";
     const so = document.getElementById("so");
     if (so) so.addEventListener("click", () => { try { localStorage.removeItem("xa-student"); } catch (e) {} setSignedIn(null); });
   }

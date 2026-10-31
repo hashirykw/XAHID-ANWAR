@@ -137,7 +137,7 @@
 
   function render(s) {
     document.getElementById("meName").textContent = s.name;
-    document.getElementById("meMeta").textContent = `${s.id} · O Level 1123`;
+    document.getElementById("meMeta").innerHTML = `${esc(s.id)}<span class="me-syl"> · O Level 1123</span>`;
     paintAvatars(s); renderRank(s); renderProfile(s);
     const h = new Date().getHours();
     document.getElementById("hello").textContent = `${h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"}, ${s.name.split(" ")[0]}`;
