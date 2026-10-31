@@ -202,7 +202,7 @@ window.XA = (function () {
     wrap.append(btn, list); sel._xbtn = btn;
     let act = -1;
     function build() {
-      list.innerHTML = [...sel.options].map((o, i) => `<li role="option" data-i="${i}" aria-selected="${o.selected && o.value !== "" ? "true" : "false"}"${o.value === "" ? " data-empty" : ""}>${o.textContent}</li>`).join("");
+      list.innerHTML = [...sel.options].map((o, i) => `<li role="option" data-i="${i}" style="--k:${Math.min(i, 12)}" aria-selected="${o.selected && o.value !== "" ? "true" : "false"}"${o.value === "" ? " data-empty" : ""}><span>${o.textContent}</span><i class="xsel-tick" aria-hidden="true"></i></li>`).join("");
       sync();
     }
     function sync() {
@@ -210,13 +210,35 @@ window.XA = (function () {
       btn.innerHTML = `<span id="${sel.id ? sel.id + "-v" : ""}" class="${!o || o.value === "" ? "ph" : ""}">${o ? o.textContent : ""}</span>${CHEV}`;
       list.querySelectorAll("li").forEach((li, i) => li.setAttribute("aria-selected", i === sel.selectedIndex && sel.value !== "" ? "true" : "false"));
     }
+    /* on phones the list opens as a bottom sheet with a title, big touch rows and a dimmed backdrop */
+    const sheetMode = () => matchMedia("(max-width:640px)").matches;
+    let shade = null;
     function open() {
       document.querySelectorAll(".xsel.open").forEach(x => x !== wrap && x._close());
       const r = btn.getBoundingClientRect(); wrap.classList.toggle("up", innerHeight - r.bottom < 260 && r.top > 300);
+      const sh = sheetMode(); wrap.classList.toggle("is-sheet", sh);
+      if (sh) {
+        const lb = sel.id && document.querySelector(`label[for="${sel.id}"]`);
+        list.dataset.title = lb ? lb.textContent.trim() : "Choose one";
+        shade = document.createElement("div"); shade.className = "xsel-shade"; document.body.appendChild(shade);
+        shade.addEventListener("click", e => { e.stopPropagation(); close(); });
+        requestAnimationFrame(() => shade && shade.classList.add("on"));
+        document.documentElement.classList.add("xsel-lock");
+        list.classList.add("is-sheet"); document.body.appendChild(list);
+      }
+      requestAnimationFrame(() => list.classList.add("show"));
       wrap.classList.add("open"); btn.setAttribute("aria-expanded", "true"); act = Math.max(0, sel.selectedIndex); mark(); sfx.open();
+      back.push("xsel", () => close(false, true));
       const cur = list.children[act]; if (cur) cur.scrollIntoView({ block: "nearest" });
     }
-    function close(focus) { if (!wrap.classList.contains("open")) return; wrap.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); if (focus) btn.focus(); }
+    function close(focus, fromBack) {
+      if (!wrap.classList.contains("open")) return; wrap.classList.remove("open"); btn.setAttribute("aria-expanded", "false");
+      list.classList.remove("show");
+      if (list.classList.contains("is-sheet")) setTimeout(() => { if (!wrap.classList.contains("open")) { list.classList.remove("is-sheet"); wrap.appendChild(list); } }, 320);
+      if (shade) { const s = shade; shade = null; s.classList.remove("on"); setTimeout(() => s.remove(), 300); document.documentElement.classList.remove("xsel-lock"); }
+      if (!fromBack) back.pop("xsel");
+      if (focus) btn.focus({ preventScroll: true });
+    }
     wrap._close = close;
     function mark() { list.querySelectorAll("li").forEach((li, i) => li.classList.toggle("act", i === act)); const c = list.children[act]; if (c) c.scrollIntoView({ block: "nearest" }); }
     function pick(i) { if (i < 0 || i >= sel.options.length) return; sel.selectedIndex = i; sync(); sel.dispatchEvent(new Event("change", { bubbles: true })); const f = sel.closest(".field"); if (f && sel.value) f.classList.remove("invalid"); sfx.pop(); close(true); }
