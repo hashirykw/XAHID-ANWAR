@@ -150,7 +150,7 @@ a.t-ai:hover .peek{transform:rotate(-4deg) translateY(-3px)}
 .word-meta{font-size:.85rem;color:var(--muted)}
 .word-eg{font-size:.95rem;border-left:3px solid var(--ember);padding-left:12px;color:var(--ink-3)}
 .yt-mark{width:56px;height:40px}
-@media (max-width:699px){.t-ai .peek{width:56px;height:66px;right:16px;top:16px}}
+@media (max-width:699px){.t-ai .peek{width:56px;height:66px;right:16px;top:16px}.t-ai h3{padding-right:62px}}
 @media (min-width:700px){.bento{grid-template-columns:repeat(2,1fr)}.t-ai{grid-column:span 2}}
 @media (min-width:1080px){
   .bento{grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(240px,auto)}
@@ -197,7 +197,7 @@ a.t-ai:hover .peek{transform:rotate(-4deg) translateY(-3px)}
 @keyframes coinSpin{0%{transform:rotateX(8deg) rotateY(-22deg)}38%{transform:rotateX(8deg) rotateY(22deg)}50%{transform:rotateX(8deg) rotateY(158deg)}88%{transform:rotateX(8deg) rotateY(202deg)}100%{transform:rotateX(8deg) rotateY(338deg)}}
 @keyframes coinShine{0%,100%{background-position:120% 0}50%{background-position:-20% 0}}
 @keyframes coinShadow{0%,38%,50%,88%,100%{transform:scaleX(1)}44%,94%{transform:scaleX(.4)}}
-@media (max-width:899px){.coin-stage{top:-14px;width:84px}.courses .section-head h2{padding-right:92px}}
+@media (max-width:899px){.coin-stage{top:-34px;width:74px}.courses .section-head h2{padding-right:86px}}
 @media (prefers-reduced-motion:reduce){.coin,.coin-shadow,.coin .face::before{animation:none}}
 
 .slip-link{display:flex;align-items:center;gap:12px;margin-top:22px;padding:14px 16px 14px 14px;border-radius:18px;text-decoration:none;color:#fff;background:rgba(26,20,16,.26);border:1px solid rgba(255,255,255,.24);font-size:.92rem;line-height:1.4;max-width:520px;transition:background .3s,border-color .3s}

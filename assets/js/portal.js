@@ -68,7 +68,7 @@
       if (!list.length) return "";
       n++;
       if (f !== "all" && paper !== f) return "";
-      return `<section class="topic" aria-label="${name}"><header class="topic-h"><span class="topic-n">${String(n).padStart(2, "0")}</span><div><h3>${name}</h3><small>${paper} · ${list.length} ${unit}${list.length > 1 ? "s" : ""}</small></div></header><div class="topic-row swipe-m">${list.map(([x, i], k) => card(x, i, k)).join("")}</div></section>`;
+      return `<section class="topic" aria-label="${name}"><header class="topic-h"><span class="topic-n">${String(n).padStart(2, "0")}</span><div><h3>${name}</h3><small>${paper} · ${list.length} ${unit}${list.length > 1 ? "s" : ""}</small></div></header><div class="topic-row${list.length > 1 ? " swipe-m" : ""}">${list.map(([x, i], k) => card(x, i, k)).join("")}</div></section>`;
     }).join("");
   }
   function renderNotes(f) {
@@ -80,7 +80,7 @@
       (l, i, k) => `<button class="card lec" data-l="${i}"><span class="thumb"><span class="play"></span><span class="lec-no">Lesson ${k + 1}</span></span><h3>${l[1]}</h3><small>${l[2]}${l[3] ? ` · ${l[3] === 100 ? "watched" : l[3] + "% watched"}` : ""}</small><div class="prog"><i style="--w:${l[3]}%"></i></div></button>`, "lecture");
   }
   function chart() {
-    const done = D.results.filter(r => r[2] != null), W = 640, H = 240, P = 34, bw = (W - P * 2) / done.length;
+    const narrow = innerWidth < 600, done = D.results.filter(r => r[2] != null), W = narrow ? 340 : 640, H = narrow ? 230 : 240, P = narrow ? 28 : 34, bw = (W - P * 2) / done.length;
     let bars = "";
     done.forEach((r, i) => {
       const h = (r[2] / 50) * (H - P * 2), x = P + i * bw + bw * .2, y = H - P - h;
@@ -97,6 +97,7 @@
   function go(v) {
     document.querySelectorAll(".dn").forEach(b => { if (b.dataset.v === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     document.querySelectorAll(".view").forEach(x => x.hidden = x.dataset.view !== v);
+    if (v === "results") chart();
     if (innerWidth < 1000) scrollTo({ top: 0, behavior: XA.reduce ? "auto" : "smooth" });
   }
   document.querySelectorAll(".dn").forEach(b => b.addEventListener("click", () => go(b.dataset.v)));

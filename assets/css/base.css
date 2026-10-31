@@ -372,3 +372,9 @@ p{margin:0}
 .promo .modal-close{z-index:2;background:rgba(255,255,255,.22);color:#fff}
 .seg.seg-2{display:grid;grid-template-columns:1fr 1fr}
 .seg.seg-2 span{width:100%;justify-content:center;white-space:normal;text-align:center;line-height:1.2;padding:6px 12px}
+
+/* phones: footer links big enough to tap, and room so the chat button never covers the last lines */
+@media (max-width:999px){
+  .foot-links a{display:inline-block;padding:7px 0}
+  .footer .wrap{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+}

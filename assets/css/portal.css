@@ -58,13 +58,15 @@
   .so-tx b{font-size:.86rem}
 }
 @media (max-width:999px){
-  .dash{padding-bottom:110px}
+  .dash{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
   .dash-side{grid-template-columns:1fr auto;align-items:center;padding:12px 16px;backdrop-filter:none;-webkit-backdrop-filter:none}
-  .dash-nav{position:fixed;z-index:44;left:12px;right:12px;bottom:12px;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px;border-radius:22px;
+  .dash-nav{position:fixed;z-index:44;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));grid-template-columns:repeat(5,1fr);gap:2px;padding:6px;border-radius:22px;
     background:linear-gradient(145deg,rgba(40,31,25,.92),rgba(26,20,16,.88));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 18px 40px -16px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14)}
   .dn{flex-direction:column;gap:3px;justify-content:center;min-height:56px;padding:0;font-size:.7rem}
-  body.portal-in .chat-fab{bottom:96px}
-  body.portal-in .chat{bottom:92px;height:min(480px,calc(100dvh - 190px))}
+  /* chat button sits above the bottom tab bar so it never covers "Results" */
+  body.portal-in .xc-fab{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 82px);width:56px;height:56px;padding:5px}
+  body.portal-in .xc-fab-av{width:46px;height:46px}
+  body.portal-in .xc-tease{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 150px)}
 }
 .dash-main{display:grid;gap:18px;min-width:0}
 .dash-top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
@@ -232,3 +234,25 @@
 .rd-close:hover{background:var(--ember)!important;color:#fff}
 #playerBox:fullscreen{width:100vw;height:100vh}
 @media (orientation:landscape) and (max-height:500px){#player .pl-info{display:none}}
+
+/* portal on phones */
+.reader h2{padding-right:52px}
+.reader .card-k{display:block;padding-right:52px}
+@media (max-width:999px){
+  .topic-row:not(.swipe-m)>*{max-width:none}
+  .topic{gap:10px}
+  .topics{gap:22px}
+}
+@media (max-width:560px){
+  .results{min-width:0;font-size:.84rem}
+  .results th,.results td{padding:11px 10px}
+  .results th:first-child,.results td:first-child{padding-left:14px}
+  .results td:nth-child(2){white-space:nowrap;color:var(--muted)}
+  .results td:nth-child(3){white-space:nowrap;font-weight:700}
+  .st{padding:3px 8px;font-size:.72rem;white-space:nowrap}
+  .dash-top h1{font-size:1.45rem}
+  .me{min-width:0}.me>div{min-width:0}
+  .me small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .so-tx b{white-space:nowrap}
+}
+@media (max-width:380px){.signout{padding:4px;gap:0}.signout .so-tx{display:none}}
