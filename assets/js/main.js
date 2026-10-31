@@ -291,14 +291,14 @@ window.XA = (function () {
       en.target.classList.remove("ec-wait"); en.target.classList.add("ec-in");
       en.target.addEventListener("animationend", () => en.target.classList.remove("ec-in"), { once: true });
     }), { rootMargin: "0px 0px -6% 0px" }) : null;
-    /* living borders: one ember arc lap when a card scrolls into view; the card in the middle of the screen keeps a slow lap */
+    /* living borders: one ember arc lap when a card scrolls into view, then the border goes quiet */
     const trace = !reduce && "IntersectionObserver" in window ? new IntersectionObserver(ents => ents.forEach(en => {
       if (!en.isIntersecting) return; trace.unobserve(en.target);
       const el = en.target; el.classList.add("ec-trace");
       const done = ev => { if (ev.animationName === "ecTrace") { el.classList.remove("ec-trace"); el.removeEventListener("animationend", done); } };
       el.addEventListener("animationend", done);
     }), { threshold: .35 }) : null;
-    const focus = !reduce && "IntersectionObserver" in window ? new IntersectionObserver(ents => ents.forEach(en => en.target.classList.toggle("ec-focus", en.isIntersecting)), { rootMargin: "-42% 0px -42% 0px" }) : null;
+    const focus = null; /* no resting arc: the border only lights up while a card scrolls in */
     function scan() {
       const fresh = [...document.querySelectorAll(SEL)].filter(el => !seen.has(el) && el.offsetParent !== null);
       const groups = new Map();

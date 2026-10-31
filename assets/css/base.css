@@ -424,18 +424,15 @@ p{margin:0}
 }
 @media (hover:none){:root :is(.note, .lec, .prow, .pcard, .flow-step, .book, .method li, .t-word, a.rankc, .card.pst, .log-stats div, .lb-row):hover{transform:none}}
 
-/* living borders: an ember arc runs once around each card as it scrolls into view,
-   and the card nearest the middle of the screen keeps a slow arc circling its edge */
+/* living borders: an ember arc runs once around each card as it scrolls into view, then fades */
 @property --ec-ang{syntax:"<angle>";inherits:false;initial-value:0deg}
 @property --ec-a{syntax:"<number>";inherits:false;initial-value:0}
 :root{--ec-a:0}
 @keyframes ecTrace{0%{--ec-ang:-40deg;--ec-a:0}12%{--ec-a:1}80%{--ec-a:1}100%{--ec-ang:320deg;--ec-a:0}}
 @keyframes ecSpin{from{--ec-ang:0deg}to{--ec-ang:360deg}}
-.ec-focus{--ec-a:.75;animation:ecSpin 6s linear infinite}
 .ec-trace{animation:ecTrace 1.5s cubic-bezier(.45,.05,.25,1) both}
 .ec-in.ec-trace{animation:ecIn .7s var(--ease-o) both,ecTrace 1.5s cubic-bezier(.45,.05,.25,1) .2s both}
 .ec-settle.ec-trace{animation:ecSettle .5s var(--ease-o) both,ecTrace 1.5s cubic-bezier(.45,.05,.25,1) .1s both}
-.ec-focus.ec-in,.ec-focus.ec-settle{animation:ecIn .7s var(--ease-o) both,ecSpin 6s linear infinite}
 @media (prefers-reduced-motion:reduce){.ec-focus,.ec-trace,.ec-in.ec-trace,.ec-settle.ec-trace,.ec-focus.ec-in{animation:none;--ec-a:0}}
 
 /* sign out: always a real button with an icon and a label */
