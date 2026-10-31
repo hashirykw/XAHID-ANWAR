@@ -6,11 +6,11 @@
     ["The Professionals Core", "tpc", 300, 290], ["Success Institute", "success", 300, 195], ["EVO Institute", "evo", 300, 270], ["Panwala Institute", "panwala", 300, 299],
     ["The Caspian Institute", "tci", 300, 196], ["Brainiacs Digital Academy", "brainiacs", 234, 291], ["NexGen-Ed", "nexgen", 277, 300], ["Neogen", "neogen", 300, 279],
     ["MAX Academy", "max", 300, 136], ["Orb-Ed", "orbed", 236, 300], ["Class-Inn", "classinn", 300, 70], ["ed-360", "ed360", 300, 85], ["Siddiqui Tutor Academy", "sta", 300, 126],
-    ["The Taurus School", null, "TS", "#2E2A7E"], ["The American Foundation Cambridge School", null, "AF", "#7A1E1E"],
-    ["Kashan's Academy", null, "KA", "#0F6B5C"], ["Gives Academy", null, "GA", "#B8360A"],
-    ["The Cedar School", null, "CS", "#1F5C3A"], ["TAFS", null, "TA", "#2E2A7E"], ["BSS", null, "BS", "#8A1538"], ["Nexus", null, "NX", "#30261F"],
-    ["Brighton", null, "BR", "#1B4F8A"], ["Bodmas", null, "BD", "#6B3FA0"], ["SKH Solutions", null, "SK", "#0E5E8A"], ["SWK Solution", null, "SW", "#B8360A"],
-    ["Askari Bahadurabad", null, "AB", "#3E5F2A"], ["MAB Academy", null, "MA", "#30261F"]
+    ["The Taurus School", "taurus", 300, 233], ["The American Foundation Cambridge School", "afcs", 300, 290],
+    ["Kashan's Academy", "kashan", 284, 300], ["Gives Academy", "gives", 300, 164],
+    ["The Cedar School", "cedar", 300, 238], ["TAFS", "afcs", 300, 290], ["Beaconhouse School System", "bss", 245, 300], ["The Nexus School", "nexus", 288, 300],
+    ["The Brighton School", "brighton", 294, 300], ["BODMAS School System", "bodmas", 300, 291], ["SKH Solutions", "skh", 283, 300], ["SWK Solution", "swk", 284, 300],
+    ["Askari Bahadurabad", "askari", 269, 300], ["MAB Academy", "mab", 300, 190]
   ];
   const AREA = 3000, MAXW = 116, MAXH = 60;
   function fit(w, h) {
