@@ -282,5 +282,39 @@ window.XA = (function () {
     promo.addEventListener("click", e => { if (e.target.closest("[data-promo-go]")) closeModal(promo); });
   });
 
+  /* ember cards: rise in when scrolled to, settle when they appear on screen, spotlight follows the pointer */
+  (function () {
+    const SEL = ".card:not(.next):not(.rank-hero), .note, .lec, .prow, .lb-row, .pcard, .log-stats div, .flow-step, .book, .method li, .t-word, .verify-card";
+    const seen = new WeakSet();
+    const io = "IntersectionObserver" in window ? new IntersectionObserver(ents => ents.forEach(en => {
+      if (!en.isIntersecting) return; io.unobserve(en.target);
+      en.target.classList.remove("ec-wait"); en.target.classList.add("ec-in");
+      en.target.addEventListener("animationend", () => en.target.classList.remove("ec-in"), { once: true });
+    }), { rootMargin: "0px 0px -6% 0px" }) : null;
+    function scan() {
+      const fresh = [...document.querySelectorAll(SEL)].filter(el => !seen.has(el) && el.offsetParent !== null);
+      const groups = new Map();
+      fresh.forEach(el => { seen.add(el); const p = el.parentElement; groups.set(p, (groups.get(p) || 0) + 1); el.style.setProperty("--ec-i", Math.min(groups.get(p) - 1, 8)); });
+      if (reduce) return;
+      fresh.forEach(el => {
+        const r = el.getBoundingClientRect(), onScreen = r.top < innerHeight && r.bottom > 0 && r.left < innerWidth && r.right > 0;
+        if (onScreen) { if (scanned) { el.classList.add("ec-settle"); el.addEventListener("animationend", () => el.classList.remove("ec-settle"), { once: true }); } }
+        else if (io && r.top >= innerHeight) { el.classList.add("ec-wait"); io.observe(el); }
+      });
+    }
+    let scanned = false, t = 0;
+    const later = () => { clearTimeout(t); t = setTimeout(() => { scan(); scanned = true; }, 30); };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", later); else later();
+    new MutationObserver(ms => { if (ms.some(m => m.type === "attributes" || [...m.addedNodes].some(n => n.nodeType === 1))) later(); }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+    if (matchMedia("(hover:hover) and (pointer:fine)").matches && !reduce) {
+      let raf = 0, last = null;
+      document.addEventListener("pointermove", e => {
+        const el = e.target.closest && e.target.closest(SEL); if (!el) return;
+        last = [el, e.clientX, e.clientY]; if (raf) return;
+        raf = requestAnimationFrame(() => { raf = 0; const [c, x, y] = last, r = c.getBoundingClientRect(); c.style.setProperty("--mx", (x - r.left) + "px"); c.style.setProperty("--my", (y - r.top) + "px"); });
+      }, { passive: true });
+    }
+  })();
+
   return { WA, wa, form, isPhone, reduce, openModal, closeModal, sfx, refreshSelects, back };
 })();

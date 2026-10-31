@@ -77,12 +77,12 @@
     const avg = myAvg(), si = stageOf(avg), st = STAGES[si], nx = STAGES[si + 1];
     const all = board("all", s), mine = board("campus", s), P = D.positions, moved = P[P.length - 2] - P[P.length - 1];
     const pill = `<span class="stage-pill" style="--sc:${st[2]}"><i></i>${st[0]} stage</span>`;
-    document.getElementById("rankMini").innerHTML = `<b class="rk-big">#${all.me.pos}</b><span class="muted">of ${all.list.length} students</span>${pill}<small class="${moved >= 0 ? "up" : "down"}">${moved > 0 ? "▲ Up " + moved + " places" : moved < 0 ? "▼ Down " + -moved + " places" : "Same place"} since the last test</small>`;
+    document.getElementById("rankMini").innerHTML = `<b class="rk-big">#${all.me.pos}</b><span class="muted">in Sir's class</span>${pill}<small class="${moved >= 0 ? "up" : "down"}">${moved > 0 ? "▲ Up " + moved + " places" : moved < 0 ? "▼ Down " + -moved + " places" : "Same place"} since the last test</small>`;
     document.getElementById("rankHero").innerHTML = `<span class="card-k">Your position</span>
-      <div class="rk-row"><div class="rk-cell"><b class="rk-big">${posTxt(all.me.pos)}</b><small>of ${all.list.length} of Sir's students</small></div>
-      <div class="rk-cell"><b class="rk-big">${posTxt(mine.me.pos)}</b><small>of ${mine.list.length} at ${esc(D.profile.campus)}</small></div>
+      <div class="rk-row"><div class="rk-cell"><b class="rk-big">${posTxt(all.me.pos)}</b><small>among all of Sir's students</small></div>
+      <div class="rk-cell"><b class="rk-big">${posTxt(mine.me.pos)}</b><small>at ${esc(D.profile.campus)}</small></div>
       <div class="rk-cell"><b class="rk-big">${Math.round(avg)}%</b><small>your average</small></div></div>
-      <p class="rk-move ${moved >= 0 ? "up" : "down"}">${moved > 0 ? `▲ You climbed ${moved} places after ${esc(D.results.filter(r => r[3]).slice(-1)[0][0])}.` : moved < 0 ? `▼ You dropped ${-moved} places. One strong test pulls you back up.` : "You held your place."} Top ${Math.max(1, Math.round(all.me.pos / all.list.length * 100))}% of the class.</p>`;
+      <p class="rk-move ${moved >= 0 ? "up" : "down"}">${moved > 0 ? `▲ You climbed ${moved} places after ${esc(D.results.filter(r => r[3]).slice(-1)[0][0])}.` : moved < 0 ? `▼ You dropped ${-moved} places. One strong test pulls you back up.` : "You held your place."}</p>`;
     const span = nx ? nx[1] - st[1] : 10, into = Math.min(100, (avg - st[1]) / span * 100);
     document.getElementById("stageCard").innerHTML = `<span class="card-k">Your stage</span>
       <div class="stages">${STAGES.map((x, k) => `<span class="stg${k === si ? " on" : k < si ? " done" : ""}" style="--sc:${x[2]}"><i></i><b>${x[0]}</b><small>${x[1]}%+</small></span>`).join("")}</div>
@@ -91,8 +91,13 @@
   }
   function renderBoard(scope, s) {
     const { list, me } = board(scope, s), hide = lbHidden();
-    let rows = list.slice(0, 10);
-    if (me.pos > 10) rows = rows.concat([{ gap: true }], list.slice(me.pos - 2, me.pos + 1));
+    /* never show the whole list or the last place, so the class size can't be worked out:
+       the top 5, plus the students just above and below you */
+    const keep = new Set([0, 1, 2, 3, 4, me.pos - 2, me.pos - 1, me.pos].filter(i => i >= 0 && i < list.length && (i < list.length - 1 || list[i].me)));
+    const idx = [...keep].sort((a, b) => a - b);
+    let rows = [];
+    idx.forEach((i, k) => { if (k && i - idx[k - 1] > 1) rows.push({ gap: true }); rows.push(list[i]); });
+    rows.push({ gap: true });
     const medal = n => n <= 3 ? `<span class="medal m${n}">${n}</span>` : `<span class="lb-n">${n}</span>`;
     document.getElementById("lbList").innerHTML = rows.map(p => p.gap ? `<li class="lb-gap" aria-hidden="true">···</li>` :
       `<li class="lb-row${p.me ? " me" : ""}">${medal(p.pos)}<span class="avatar avatar-sm${p.me ? " me-av" : ""}">${esc(p.name.trim()[0])}</span><span class="lb-who"><b>${p.me ? "You" + (hide ? " (hidden from others)" : "") : esc(p.name)}</b><small>${esc(p.campus)}</small></span><span class="lb-avg">${Math.round(p.avg)}%</span><span class="tr ${p.trend > 0 ? "up" : p.trend < 0 ? "down" : ""}" aria-label="${p.trend > 0 ? "moving up" : p.trend < 0 ? "moving down" : "steady"}">${p.trend > 0 ? "▲" : p.trend < 0 ? "▼" : "–"}</span></li>`).join("");
