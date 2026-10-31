@@ -42,6 +42,10 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - Phones can't show a PDF inside a page, so `assets/js/papers.js` draws past papers page by page with PDF.js (`assets/vendor/pdfjs/`, Apache-2.0), loaded only when a paper is opened on a phone
 - `api/paper.js` is a small Vercel function that fetches the paper from the archive so it comes from this site. It only accepts 1123, 0500, 0510 and 0511 paper file names, and the CDN caches each paper for a year
 
+## School logos
+- Every logo in `assets/img/logos/` must be a transparent WebP, trimmed to the logo itself. Run `python3 scripts/check-logos.py` before pushing: it fails if any logo still has a background, a white box or screenshot frame around it, or empty margins
+- Logos are sized optically in `assets/js/home.js` (`fit`): the last number of each entry is how much of its box the logo fills, so every school gets the same visual weight. The school name stays on the card for screen readers and search engines only
+
 ## Settings to know
 - WhatsApp number: `WA` in `assets/js/main.js` (the assistant reads it from there)
 - Assistant answers: `INTENTS` in `assets/js/chat.js`

@@ -3,27 +3,30 @@
   /* all affiliations together, one wall. Logos are sized by area, not by box,
      so a wide wordmark and a tall crest read at the same visual weight. */
   const affils = [
-    ["The Professionals Core", "tpc", 300, 290], ["Success Institute", "success", 300, 195], ["EVO Institute", "evo", 300, 270], ["Panwala Institute", "panwala", 300, 299],
-    ["The Caspian Institute", "tci", 300, 196], ["Brainiacs Digital Academy", "brainiacs", 234, 291], ["NexGen-Ed", "nexgen", 277, 300], ["Neogen", "neogen", 300, 279],
-    ["MAX Academy", "max", 300, 136], ["Orb-Ed", "orbed", 236, 300], ["Class-Inn", "classinn", 300, 70], ["ed-360", "ed360", 300, 85], ["Siddiqui Tutor Academy", "sta", 300, 126],
-    ["The Taurus School", "taurus", 232, 186], ["The American Foundation Cambridge School", "afcs", 294, 284],
-    ["Kashan's Academy", "kashan", 209, 241], ["Gives Academy", "gives", 360, 159],
-    ["The Cedar School", "cedar", 287, 103], ["TAFS", "afcs", 294, 284], ["Beaconhouse School System", "bss", 159, 157], ["The Nexus School", "nexus", 338, 360],
-    ["The Brighton School", "brighton", 210, 98], ["BODMAS School System", "bodmas", 348, 347], ["SKH Solutions", "skh", 207, 203], ["SWK Solution", "swk", 248, 258],
-    ["Askari Bahadurabad", "askari", 149, 174], ["MAB Academy", "mab", 287, 125]
+    ["The Professionals Core", "tpc", 300, 290, 0.32], ["Success Institute", "success", 300, 195, 0.37], ["EVO Institute", "evo", 300, 270, 0.5], ["Panwala Institute", "panwala", 300, 299, 0.28],
+    ["The Caspian Institute", "tci", 300, 196, 0.26], ["Brainiacs Digital Academy", "brainiacs", 234, 291, 0.66], ["NexGen-Ed", "nexgen", 277, 300, 0.49], ["Neogen", "neogen", 300, 279, 0.38],
+    ["MAX Academy", "max", 300, 136, 0.63], ["Orb-Ed", "orbed", 236, 300, 0.63], ["Class-Inn", "classinn", 300, 70, 0.34], ["ed-360", "ed360", 300, 85, 0.29], ["Siddiqui Tutor Academy", "sta", 300, 126, 0.58],
+    ["The Taurus School", "taurus", 232, 186, 0.2], ["The American Foundation Cambridge School", "afcs", 294, 284, 0.49],
+    ["Kashan's Academy", "kashan", 209, 241, 0.5], ["Gives Academy", "gives", 360, 159, 0.37],
+    ["The Cedar School", "cedar", 287, 103, 0.3], ["TAFS", "afcs", 294, 284, 0.49], ["Beaconhouse School System", "bss", 159, 157, 0.6], ["The Nexus School", "nexus", 338, 360, 0.71],
+    ["The Brighton School", "brighton", 210, 98, 0.2], ["BODMAS School System", "bodmas", 348, 347, 0.18], ["SKH Solutions", "skh", 207, 203, 0.14], ["SWK Solution", "swk", 248, 258, 0.75],
+    ["Askari Bahadurabad", "askari", 149, 174, 0.32], ["MAB Academy", "mab", 287, 125, 0.34]
   ];
-  const AREA = 3000, MAXW = 116, MAXH = 60;
-  function fit(w, h) {
-    const r = w / h; let hh = Math.sqrt(AREA / r), ww = hh * r;
+  /* optical sizing: every logo gets about the same visual weight. k = how much of the box the logo actually fills
+     (from its transparency), so airy logos are drawn a little larger and solid ones a little smaller */
+  const AREA = 4300, MAXW = 132, MAXH = 76;
+  function fit(w, h, k) {
+    const r = w / h, area = AREA / Math.pow(Math.min(Math.max(k || .5, .14), .8) / .45, .55);
+    let hh = Math.sqrt(area / r), ww = hh * r;
     if (ww > MAXW) { ww = MAXW; hh = ww / r; } if (hh > MAXH) { hh = MAXH; ww = hh * r; }
     return [Math.round(ww), Math.round(hh)];
   }
   const wall = document.getElementById("logoWall");
   wall.innerHTML = affils.map(a => {
     let vis;
-    if (a[1]) { const [w, h] = fit(a[2], a[3]); vis = `<span class="lg"><img src="/assets/img/logos/${a[1]}.webp" alt="${a[0]} logo" width="${a[2]}" height="${a[3]}" style="--w:${w};--h:${h}" loading="lazy" decoding="async" onload="this.classList.add('in')"></span>`; }
+    if (a[1]) { const [w, h] = fit(a[2], a[3], a[4]); vis = `<span class="lg"><img src="/assets/img/logos/${a[1]}.webp" alt="${a[0]} logo" width="${a[2]}" height="${a[3]}" style="--w:${w};--h:${h}" loading="lazy" decoding="async" onload="this.classList.add('in')"></span>`; }
     else vis = `<span class="lg"><span class="mono" style="--c:${a[3]}" aria-hidden="true">${a[2]}</span></span>`;
-    return `<li title="${a[0]}">${vis}<span class="nm">${a[0]}</span></li>`;
+    return `<li title="${a[0]}">${vis}<span class="sr-only">${a[0]}</span></li>`;
   }).join("");
   function markExtras() {
     const cols = getComputedStyle(wall).gridTemplateColumns.split(" ").length || 3;
