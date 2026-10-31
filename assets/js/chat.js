@@ -186,8 +186,9 @@
   /* ---------- open / close ---------- */
   let open = false, lastFocus = null;
   function badge(on) { fab.classList.toggle("unread", on); }
-  function setOpen(v) {
+  function setOpen(v, fromBack) {
     if (v === open) return; open = v;
+    if (window.XA && XA.back) { if (v) XA.back.push("chat", () => setOpen(false, true)); else if (!fromBack) XA.back.pop("chat"); }
     document.body.classList.toggle("chat-open", v);
     fab.setAttribute("aria-expanded", v); box.setAttribute("aria-hidden", !v);
     v ? sfx.open() : sfx.close();

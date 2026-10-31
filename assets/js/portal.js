@@ -4,7 +4,10 @@
   const get = () => { try { return JSON.parse(localStorage.getItem("xa-student")); } catch (e) { return null; } };
   const set = s => { try { s ? localStorage.setItem("xa-student", JSON.stringify(s)) : localStorage.removeItem("xa-student"); } catch (e) {} };
 
-  const TEST_VIDEO = "Y97voa617G4"; /* Sir Xahid Anwar sample lecture, used for every lecture until each class has its own video */
+  /* video IDs are stored scrambled so they aren't readable in the page; vid("...") unscrambles.
+     To add one: btoa(ID.split("").reverse().join("")) in the browser console, paste the result */
+  const vid = x => { try { return atob(x).split("").reverse().join(""); } catch (e) { return ""; } };
+  const TEST_VIDEO = vid("NEc3MTZhb3Y3OVk="); /* Sir Xahid Anwar sample lecture, used for every lecture until each class has its own video */
   const D = {
     wait: [["Directed writing: school canteen letter", "Test"], ["Composition: The Storm", "Test"]],
     skills: [["Reading", 68], ["Writing", 74], ["Summary", 61]],
@@ -178,7 +181,15 @@
   }
 
   /* view switching */
-  function go(v) {
+  /* each portal tab is a history step, so the phone's back button returns to the last tab, not off the site */
+  let curView = null;
+  addEventListener("popstate", e => {
+    if (dash.hidden) return;
+    const v = e.state && e.state.xaView; go(v || "home", true);
+  });
+  function go(v, fromBack) {
+    if (!fromBack && v !== curView) { try { curView === null ? history.replaceState({ xaView: v }, "") : history.pushState({ xaView: v }, ""); } catch (e) {} }
+    curView = v;
     document.querySelectorAll(".dn").forEach(b => { if (b.dataset.v === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     document.querySelectorAll(".view").forEach(x => x.hidden = x.dataset.view !== v);
     if (v === "results") chart();
@@ -211,17 +222,9 @@
     const b = e.target.closest(".lec"); if (!b) return; const l = D.lectures[+b.dataset.l];
     document.getElementById("pl-title").textContent = l[1];
     document.getElementById("plMeta").textContent = `${topicName(l[0])} · ${l[2]}`;
-    const scr = document.getElementById("screen"); scr.querySelectorAll("iframe").forEach(f => f.remove());
-    if (l[4]) {
-      const f = document.createElement("iframe");
-      /* no fullscreen button, so the moving student ID always stays on top of the video */
-      f.src = `https://www.youtube-nocookie.com/embed/${l[4]}?rel=0&modestbranding=1&playsinline=1&fs=0&disablekb=1&iv_load_policy=3&autoplay=1`;
-      f.title = l[1]; f.allow = "autoplay; encrypted-media; picture-in-picture"; f.referrerPolicy = "strict-origin-when-cross-origin";
-      scr.prepend(f); scr.classList.add("has-video");
-    } else scr.classList.remove("has-video");
-    /* real fullscreen on the whole player (video + moving ID + close button); phones turn sideways */
-    const box = document.getElementById("playerBox"), fs = box.requestFullscreen || box.webkitRequestFullscreen;
-    if (fs) { try { const r = fs.call(box); if (r && r.then) r.then(() => { try { window.screen.orientation.lock("landscape").catch(() => {}); } catch (e) {} }).catch(() => {}); } catch (e) {} }
+    if (l[4]) openVideo(l[4]); else document.getElementById("screen").classList.remove("has-video");
+    /* the player already covers the whole window; on laptops and Android it also goes true full screen */
+    enterFs();
     XA.openModal("player");
   });
 
@@ -244,7 +247,7 @@
     vx = Math.random() * 120 + 10; vy = Math.random() * 80 + 10;
     cancelAnimationFrame(vRaf); vRaf = requestAnimationFrame(vStep);
   }
-  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else { cancelAnimationFrame(vRaf); screen.querySelectorAll("iframe").forEach(f => f.remove()); const fe = document.fullscreenElement || document.webkitFullscreenElement; if (fe) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} } try { window.screen.orientation.unlock(); } catch (e) {} } })
+  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else { cancelAnimationFrame(vRaf); closeVideo(); const fe = document.fullscreenElement || document.webkitFullscreenElement; if (fe) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} } try { window.screen.orientation.unlock(); } catch (e) {} } })
     .observe(player, { attributes: true, attributeFilter: ["class"] });
 
   /* notes and lectures black out when the app goes to the background, the window loses focus,
@@ -316,10 +319,89 @@
     const n = pwIn.value.length; try { pwIn.setSelectionRange(n, n); } catch (e) {}
   });
 
+  /* ---------- lecture player: YouTube plays underneath, but every tap lands on our own controls,
+     so there is no title link, YouTube logo, share button or "watch on YouTube" for students to reach ---------- */
+  let ytReady = null, yp = null, vpTick = 0, vpHideT = 0, vpStartT = 0;
+  const vpEl = document.getElementById("vp"), $ = id => document.getElementById(id);
+  const tfmt = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0"); };
+  function loadYT() {
+    if (ytReady) return ytReady;
+    ytReady = new Promise((res, rej) => {
+      if (window.YT && YT.Player) return res();
+      const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { if (prev) prev(); res(); };
+      const sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api"; sc.onerror = () => { ytReady = null; rej(); }; document.head.appendChild(sc);
+    });
+    return ytReady;
+  }
+  const vpState = c => { ["vp-playing", "vp-paused", "vp-ended", "vp-loading"].forEach(k => vpEl.classList.toggle(k, k === c)); };
+  function vpShow() { vpEl.classList.add("vp-ui"); clearTimeout(vpHideT); vpHideT = setTimeout(() => { if (vpEl.classList.contains("vp-playing")) vpEl.classList.remove("vp-ui"); }, 3000); }
+  function openVideo(id) {
+    closeVideo();
+    const scr = $("screen"), mount = document.createElement("div"); mount.id = "ytMount"; scr.prepend(mount);
+    scr.classList.add("has-video"); vpEl.classList.remove("tap-through"); vpState("vp-loading"); vpShow();
+    $("vpCur").textContent = "0:00"; $("vpDur").textContent = "0:00"; $("vpSeek").value = 0; $("vpSpeed").textContent = "1x";
+    loadYT().then(() => {
+      if (!player.classList.contains("open")) return;
+      yp = new YT.Player(mount, {
+        videoId: id, host: "https://www.youtube-nocookie.com",
+        playerVars: { autoplay: 1, controls: 0, rel: 0, modestbranding: 1, playsinline: 1, fs: 0, disablekb: 1, iv_load_policy: 3, cc_load_policy: 0, showinfo: 0, origin: location.origin },
+        events: {
+          onReady: e => { e.target.playVideo(); vpStartT = setTimeout(() => { if (yp && ![1, 3].includes(yp.getPlayerState())) { vpEl.classList.add("tap-through"); vpState("vp-paused"); } }, 1800); },
+          onStateChange: e => {
+            const st = e.data;
+            if (st === 1) { vpEl.classList.remove("tap-through"); vpState("vp-playing"); vpShow(); }
+            else if (st === 2) { vpState("vp-paused"); vpEl.classList.add("vp-ui"); }
+            else if (st === 0) { vpState("vp-ended"); vpEl.classList.add("vp-ui"); }
+            else if (st === 3) vpState("vp-loading");
+          }
+        }
+      });
+      const f = mount.tagName === "IFRAME" ? mount : scr.querySelector("iframe"); if (f) f.setAttribute("tabindex", "-1");
+      vpTick = setInterval(() => {
+        if (!yp || !yp.getDuration) return;
+        const d = yp.getDuration() || 0, c = yp.getCurrentTime() || 0;
+        $("vpDur").textContent = tfmt(d); if (!vpEl.classList.contains("seeking")) { $("vpCur").textContent = tfmt(c); $("vpSeek").value = d ? Math.round(c / d * 1000) : 0; }
+        $("vpSeek").style.setProperty("--p", (d ? c / d * 100 : 0) + "%");
+      }, 250);
+    }).catch(() => { vpState("vp-paused"); $("vpHint").textContent = "The lecture couldn't load. Check your internet and open it again."; vpEl.classList.add("tap-through", "vp-error"); });
+  }
+  function closeVideo() {
+    clearInterval(vpTick); clearTimeout(vpStartT); clearTimeout(vpHideT);
+    try { if (yp && yp.destroy) yp.destroy(); } catch (e) {}
+    yp = null; const m = $("ytMount"); if (m) m.remove(); $("screen").querySelectorAll("iframe").forEach(f => f.remove());
+    vpEl.classList.remove("vp-error", "tap-through"); $("vpHint").textContent = "Tap the video to start";
+  }
+  /* full screen covers the whole player (video, moving ID, controls, close button), so the ID never disappears */
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+  function enterFs() {
+    const box = $("playerBox"), fs = box.requestFullscreen || box.webkitRequestFullscreen;
+    if (!fs) return;
+    try { const r = fs.call(box); if (r && r.then) r.then(() => { try { window.screen.orientation.lock("landscape").catch(() => {}); } catch (e) {} }).catch(() => {}); } catch (e) {}
+  }
+  function exitFs() { if (!fsEl()) return; try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} try { window.screen.orientation.unlock(); } catch (e) {} }
+  const fsSync = () => vpEl.classList.toggle("is-fs", !!fsEl());
+  document.addEventListener("fullscreenchange", fsSync); document.addEventListener("webkitfullscreenchange", fsSync);
+  /* iPhone browsers have no full-screen mode for pages, the player already fills the screen there */
+  if (!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) $("vpFs").hidden = true;
+  $("vpFs").addEventListener("click", () => { fsEl() ? exitFs() : enterFs(); vpShow(); });
+  const toggle = () => { if (!yp || !yp.getPlayerState) return; const st = yp.getPlayerState(); st === 1 || st === 3 ? yp.pauseVideo() : yp.playVideo(); };
+  $("vpCover").addEventListener("click", () => { if (!vpEl.classList.contains("vp-ui")) return vpShow(); toggle(); vpShow(); });
+  $("vpBig").addEventListener("click", () => { toggle(); vpShow(); });
+  $("vpPlay").addEventListener("click", () => { toggle(); vpShow(); });
+  $("vpBack").addEventListener("click", () => { if (yp) yp.seekTo(Math.max(0, yp.getCurrentTime() - 10), true); vpShow(); });
+  $("vpReplay").addEventListener("click", () => { if (yp) { yp.seekTo(0, true); yp.playVideo(); } });
+  const seek = $("vpSeek");
+  seek.addEventListener("input", () => { vpEl.classList.add("seeking"); vpShow(); if (yp) $("vpCur").textContent = tfmt(seek.value / 1000 * (yp.getDuration() || 0)); });
+  seek.addEventListener("change", () => { vpEl.classList.remove("seeking"); if (yp) yp.seekTo(seek.value / 1000 * (yp.getDuration() || 0), true); });
+  const SPEEDS = [1, 1.25, 1.5, 2, 0.75];
+  $("vpSpeed").addEventListener("click", e => { if (!yp) return; const cur = yp.getPlaybackRate ? yp.getPlaybackRate() : 1, n = SPEEDS[(SPEEDS.indexOf(cur) + 1) % SPEEDS.length]; yp.setPlaybackRate(n); e.currentTarget.textContent = n + "x"; vpShow(); });
+  $("vpMute").addEventListener("click", () => { if (!yp) return; const m = !vpEl.classList.contains("muted"); m ? yp.mute() : yp.unMute(); vpEl.classList.toggle("muted", m); vpShow(); });
+  vpEl.addEventListener("contextmenu", e => e.preventDefault());
+
   /* sign in / out */
   function show(s) {
     auth.hidden = !!s; dash.hidden = !s; document.body.classList.toggle("portal-in", !!s);
-    if (s) { render(s); go("home"); }
+    if (s) { render(s); curView = null; go("home"); }
   }
   XA.form(document.getElementById("loginForm"), { id: v => /^xa-?\d{3,}$/i.test(v.trim()), pw: v => v.length >= 4 },
     f => { const s = { id: f.id.trim().toUpperCase(), name: "Student", demo: false }; set(s); show(s); });

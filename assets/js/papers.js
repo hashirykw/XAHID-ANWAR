@@ -40,7 +40,43 @@
     return list;
   }
   const docUrl = (pp, d) => pp.xa ? pp.files[d] : `${SRC}${pp.code}_${pp.ss}${String(pp.y).slice(2)}_${d}_${pp.v}.pdf`;
-  const embed = (pp, d) => { const u = docUrl(pp, d); return pp.xa || !mobile() ? u : `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(u)}`; };
+  const embed = (pp, d) => docUrl(pp, d);
+  /* phones can't show a PDF inside the page, so there the paper is drawn page by page with PDF.js,
+     loaded through the site's own /api/paper copy of the archive file */
+  const usePdfJs = pp => !pp.xa && mobile();
+  const docHtml = (pp, d) => usePdfJs(pp)
+    ? `<div class="pdfv" data-u="${docUrl(pp, d)}" data-t="${DOC[d]}"><span class="load">Loading ${DOC[d].toLowerCase()}…</span></div>`
+    : `<span class="load">Loading ${DOC[d].toLowerCase()}…</span><iframe src="${embed(pp, d)}" title="${DOC[d]}, ${title(pp)}" loading="lazy"></iframe>`;
+  let pdfLib = null;
+  const getPdf = () => pdfLib || (pdfLib = import("/assets/vendor/pdfjs/pdf.min.mjs").then(m => { m.GlobalWorkerOptions.workerSrc = "/assets/vendor/pdfjs/pdf.worker.min.mjs"; return m; }));
+  function mountPdfs(root) { root.querySelectorAll(".pdfv:not([data-on])").forEach(el => { el.dataset.on = 1; drawPdf(el); }); }
+  async function drawPdf(el) {
+    const u = el.dataset.u, f = u.split("/").pop();
+    const fail = () => { el.innerHTML = `<div class="pdf-fail"><b>This paper didn't open here.</b><span>Cambridge may not have set this variant, or the archive is busy.</span><a class="btn btn-sm" href="/api/paper?f=${encodeURIComponent(f)}" target="_blank" rel="noopener">Open the PDF</a></div>`; };
+    let lib, doc;
+    try { lib = await getPdf(); } catch (e) { return fail(); }
+    for (const src of [`/api/paper?f=${encodeURIComponent(f)}`, u]) {
+      try { doc = await lib.getDocument({ url: src, disableRange: true, disableStream: true, isEvalSupported: false }).promise; break; } catch (e) { doc = null; }
+    }
+    if (!el.isConnected) return;
+    if (!doc) return fail();
+    el.innerHTML = ""; el.classList.add("ready");
+    const W = el.clientWidth || innerWidth, dpr = Math.min(2.5, (devicePixelRatio || 1) * 1.4);
+    const io = new IntersectionObserver(ents => ents.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); paint(en.target); } }), { root: el, rootMargin: "800px 0px" });
+    async function paint(box) {
+      try {
+        const page = await doc.getPage(+box.dataset.p), v1 = page.getViewport({ scale: 1 }), v = page.getViewport({ scale: W / v1.width * dpr });
+        const c = document.createElement("canvas"); c.width = Math.floor(v.width); c.height = Math.floor(v.height);
+        await page.render({ canvasContext: c.getContext("2d"), viewport: v }).promise;
+        box.innerHTML = ""; box.appendChild(c);
+      } catch (e) { box.textContent = "This page couldn't be drawn."; }
+    }
+    const first = await doc.getPage(1), r = first.getViewport({ scale: 1 }), ratio = r.height / r.width;
+    for (let i = 1; i <= doc.numPages; i++) {
+      const box = document.createElement("div"); box.className = "pdf-pg"; box.dataset.p = i; box.style.aspectRatio = `1 / ${ratio}`;
+      el.appendChild(box); io.observe(box);
+    }
+  }
   const title = pp => pp.xa ? pp.title : `${pp.code} · ${SESS[pp.ss]} ${pp.y} · Paper ${pp.p} ${pp.name}`;
   const len = m => m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? " " + (m % 60) + "m" : ""}` : `${m} min`;
 
@@ -88,8 +124,9 @@
     document.getElementById("vTitle").textContent = title(pp);
     document.getElementById("vMeta").textContent = `${len(pp.min)}${pp.marks ? ` · ${pp.marks} marks` : ""}${pp.xa ? " · XA original" : " · © UCLES"}`;
     viewer.hidden = false; document.body.style.overflow = "hidden"; XA.sfx.open(); drawViewer();
+    XA.back.push("viewer", () => closeViewer(true));
   }
-  function frame(pp, d) { return `<div class="pane"><div class="pane-lbl">${DOC[d]}</div><span class="load">Loading ${DOC[d].toLowerCase()}…</span><iframe src="${embed(pp, d)}" title="${DOC[d]}, ${title(pp)}" loading="lazy"></iframe></div>`; }
+  function frame(pp, d) { return `<div class="pane"><div class="pane-lbl">${DOC[d]}</div>${docHtml(pp, d)}</div>`; }
   function drawViewer() {
     const tabs = split ? cur.docs.filter(d => d !== "ms") : cur.docs;
     if (!tabs.includes(main)) main = tabs[0];
@@ -97,12 +134,13 @@
     splitBtn.setAttribute("aria-pressed", split); splitBtn.textContent = split ? "One at a time" : "Side by side";
     panes.className = "v-panes" + (split ? " split" : "");
     panes.innerHTML = frame(cur, main) + (split ? frame(cur, "ms") : "");
+    mountPdfs(panes);
   }
   docsBar.addEventListener("click", e => { const b = e.target.closest("[data-d]"); if (b) { main = b.dataset.d; drawViewer(); } });
   splitBtn.addEventListener("click", () => { split = !split; drawViewer(); });
-  function closeViewer() { if (viewer.hidden) return; viewer.hidden = true; panes.innerHTML = ""; document.body.style.overflow = ""; XA.sfx.close(); }
+  function closeViewer(fromBack) { if (viewer.hidden) return; viewer.hidden = true; panes.innerHTML = ""; document.body.style.overflow = ""; XA.sfx.close(); if (fromBack !== true) XA.back.pop("viewer"); }
   document.getElementById("vClose").addEventListener("click", closeViewer);
-  document.getElementById("vTimed").addEventListener("click", () => { const pp = cur; closeViewer(); setup(pp); });
+  document.getElementById("vTimed").addEventListener("click", () => { const pp = cur; closeViewer(); setTimeout(() => setup(pp), 80); });
   addEventListener("keydown", e => { if (e.key === "Escape" && !viewer.hidden && exam.hidden) closeViewer(); });
 
   /* ---------- timed setup ---------- */
@@ -122,7 +160,8 @@
     const t = document.querySelector("input[name=t]:checked").value;
     let min = t === "full" ? pending.min : t === "80" ? Math.round(pending.min * 0.8) : Math.max(5, Math.min(240, +document.getElementById("suMin").value || pending.min));
     XA.closeModal(document.getElementById("setup"));
-    startExam(pending, min, document.getElementById("suLock").checked);
+    const pp = pending, lk = document.getElementById("suLock").checked;
+    setTimeout(() => startExam(pp, min, lk), 80);
   });
 
   /* ---------- exam mode ---------- */
@@ -151,7 +190,8 @@
     setTimeout(() => text.focus(), 300);
   }
   function showDoc(d) {
-    document.getElementById("exFrame").innerHTML = `<iframe src="${embed(X.pp, d)}" title="${DOC[d]}"></iframe>`;
+    const ef = document.getElementById("exFrame");
+    ef.innerHTML = usePdfJs(X.pp) ? docHtml(X.pp, d) : `<iframe src="${embed(X.pp, d)}" title="${DOC[d]}"></iframe>`; mountPdfs(ef);
     document.querySelectorAll("#exTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.d === d));
   }
   document.getElementById("exTabs").addEventListener("click", e => { const b = e.target.closest("[data-d]"); if (b) showDoc(b.dataset.d); });

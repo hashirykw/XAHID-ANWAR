@@ -38,6 +38,10 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - `favicon.ico`, `favicon.svg`, `assets/img/icon-*.png`, `apple-touch-icon.png` tab and home-screen icons
 - `sitemap.xml` and `robots.txt` for Google
 
+## Phone paper viewer
+- Phones can't show a PDF inside a page, so `assets/js/papers.js` draws past papers page by page with PDF.js (`assets/vendor/pdfjs/`, Apache-2.0), loaded only when a paper is opened on a phone
+- `api/paper.js` is a small Vercel function that fetches the paper from the archive so it comes from this site. It only accepts 1123, 0500, 0510 and 0511 paper file names, and the CDN caches each paper for a year
+
 ## Settings to know
 - WhatsApp number: `WA` in `assets/js/main.js` (the assistant reads it from there)
 - Assistant answers: `INTENTS` in `assets/js/chat.js`
@@ -46,6 +50,8 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - Past-paper source: `SRC` in `assets/js/papers.js`
 - Portal topics, notes and lectures: `topics`, `notes`, `lectures` in `assets/js/portal.js`. Topics are listed in syllabus order and notes and lectures are shown grouped topic by topic in that order
 - Portal profile and rank: `profile`, `positions` and the classmates list `PEERS` in `assets/js/portal.js` are preview data. Stages (`STAGES`: Starter, Bronze 50%+, Silver 60%+, Gold 70%+, Platinum 80%+, Diamond 90%+) come from the average of approved tests. Profile photos are cropped to 320 px and kept on the device until Supabase storage is connected
+- Lecture player (portal): YouTube plays underneath the site's own controls (play, back 10 s, seek, speed, mute, full screen), so students never touch YouTube's title link, logo or share button. Video IDs are stored scrambled in `assets/js/portal.js` (see the note above `vid`)
+- Back button: menus, pop-ups, the paper viewer, the chat and each portal tab are history steps, so the phone's back button closes or returns one step instead of leaving the page
 - Course material protection (portal): notes and lectures black out when the app goes to the background, loses focus, or a screenshot or print shortcut is pressed; the student ID drifts across the lecture video the whole time it is open. A browser cannot stop a phone's own screenshot buttons, so the ID watermark is what traces a leaked copy
 
 Portal sign-in, AI marking and student data are front end only until the backend (Supabase + a server function for the AI) is connected.

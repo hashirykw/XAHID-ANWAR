@@ -62,12 +62,31 @@ window.XA = (function () {
     document.addEventListener("pointerout", e => { if (lastEl && !lastEl.contains(e.relatedTarget)) lastEl = null; });
   }
 
+  /* phone back button: closes whatever is open on top (menu, pop-up, paper viewer, chat)
+     instead of leaving the page. Each open layer adds one history step; closing it by hand removes it again */
+  const back = (() => {
+    const stack = []; let skip = 0;
+    addEventListener("popstate", e => {
+      if (skip) { skip--; e.stopImmediatePropagation(); return; }
+      if (stack.length) { const it = stack.pop(); e.stopImmediatePropagation(); it.close(true); }
+    });
+    return {
+      push(key, close) { if (stack.some(x => x.key === key)) return; stack.push({ key, close }); try { history.pushState({ xaLayer: key }, ""); } catch (e) {} },
+      pop(key) {
+        const i = stack.findIndex(x => x.key === key); if (i < 0) return;
+        const top = i === stack.length - 1; stack.splice(i, 1);
+        if (top && history.state && history.state.xaLayer === key) { skip++; history.back(); }
+      }
+    };
+  })();
+
   /* menu (small panel under the nav) */
   const menuBtn = document.querySelector(".menu-btn"), sheet = document.getElementById("sheet");
-  function setMenu(open) {
+  function setMenu(open, fromBack) {
     if (!menuBtn) return;
     const was = document.body.classList.contains("menu-open"); if (was === open) return;
     document.body.classList.toggle("menu-open", open);
+    if (open) back.push("menu", () => setMenu(false, true)); else if (!fromBack) back.pop("menu");
     menuBtn.setAttribute("aria-expanded", open);
     menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     sheet.setAttribute("aria-hidden", !open);
@@ -128,8 +147,8 @@ window.XA = (function () {
     if (opener) { e.preventDefault(); openModal(opener.dataset.modal); }
     if (e.target.matches(".modal") || e.target.closest(".modal-close")) closeModal(e.target.closest(".modal"));
   });
-  function openModal(id) { const m = document.getElementById(id); if (!m) return; sfx.open(); m.classList.add("open"); const f = m.querySelector("[data-autofocus]") || m.querySelector("input,button:not(.modal-close)"); if (f) setTimeout(() => f.focus({ preventScroll: true }), 30); }
-  function closeModal(m) { if (m && m.classList.contains("open")) { m.classList.remove("open"); sfx.close(); } }
+  function openModal(id) { const m = document.getElementById(id); if (!m) return; if (m.classList.contains("open")) return; sfx.open(); m.classList.add("open"); back.push("modal:" + id, () => closeModal(m, true)); const f = m.querySelector("[data-autofocus]") || m.querySelector("input,button:not(.modal-close)"); if (f) setTimeout(() => f.focus({ preventScroll: true }), 30); }
+  function closeModal(m, fromBack) { if (m && m.classList.contains("open")) { m.classList.remove("open"); sfx.close(); if (!fromBack) back.pop("modal:" + m.id); } }
   addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".modal.open").forEach(closeModal); });
 
   /* WhatsApp + form helpers */
@@ -263,5 +282,5 @@ window.XA = (function () {
     promo.addEventListener("click", e => { if (e.target.closest("[data-promo-go]")) closeModal(promo); });
   });
 
-  return { WA, wa, form, isPhone, reduce, openModal, closeModal, sfx, refreshSelects };
+  return { WA, wa, form, isPhone, reduce, openModal, closeModal, sfx, refreshSelects, back };
 })();
