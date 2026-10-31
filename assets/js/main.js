@@ -1,5 +1,19 @@
 /* Sir Xahid Anwar · shared behaviour (nav, menu, search, sound, modals, buttons, dropdowns, forms)
    The preloader lives in loader.js and the assistant in chat.js. */
+/* XA coins: build the 3D coin (avatar front, logo back) inside every .xcoin */
+(function () {
+  function build(root) {
+    (root || document).querySelectorAll(".xcoin:not([data-xc])").forEach((el, n) => {
+      el.dataset.xc = 1;
+      let rims = ""; for (let z = -4; z <= 4; z++) rims += `<i class="xc-rim" style="--z:${z}"></i>`;
+      el.innerHTML = `<span class="xc-in">${rims}<i class="xc-face xc-front"><i class="mascot"></i><i class="xc-shine"></i></i><i class="xc-face xc-back"><i class="xc-logo"></i><i class="xc-shine"></i></i></span><span class="xc-shadow"></span>`;
+      el.style.setProperty("--xc-d", (-(n * 1.7) % 9).toFixed(1) + "s");
+    });
+  }
+  window.XA_COINS = build;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => build()); else build();
+})();
+
 window.XA = (function () {
   const WA = "923112004967";
   const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;

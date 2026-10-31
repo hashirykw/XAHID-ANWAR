@@ -493,3 +493,27 @@ p{margin:0}
 .xsel-list.is-sheet li{min-height:52px;font-size:1rem}
 html.xsel-lock,html.xsel-lock body{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.xsel-list,.xsel-list.is-sheet,.xsel-list li,.xsel-shade{transition:none!important;animation:none!important}}
+
+/* ---------- XA coin: Sir's avatar on the front, the XA logo on the back, spinning like a real coin ----------
+   used everywhere the site shows the round avatar: home sticker, page heroes, sign-in and register cards, pop-ups */
+.xcoin{display:block;aspect-ratio:1;height:auto!important;container-type:inline-size;perspective:900px;background:none!important;border:0!important;box-shadow:none!important;border-radius:0}
+.xc-in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;animation:xcSpin 9s cubic-bezier(.65,0,.35,1) infinite;animation-delay:var(--xc-d,0s)}
+.xc-in i{position:absolute;inset:0;border-radius:50%;display:block}
+.xc-rim{background:linear-gradient(90deg,#140f0c,#3a2a20 28%,var(--ember-deep) 50%,#3a2a20 72%,#140f0c);transform:translateZ(calc(var(--z) * 1cqw))}
+.xc-face{display:grid!important;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border:3.4cqw solid var(--ink);box-sizing:border-box;
+  box-shadow:inset 0 0 0 1.6cqw rgba(255,255,255,.22),inset 0 -9cqw 16cqw rgba(26,20,16,.22)}
+.xc-front{background:radial-gradient(circle at 34% 26%,var(--ember-soft),var(--ember) 52%,var(--ember-deep));transform:translateZ(4.6cqw)}
+.xc-back{background:radial-gradient(circle at 34% 26%,#fff,var(--bone) 70%);transform:rotateY(180deg) translateZ(4.6cqw)}
+.xc-in .xc-face .mascot{position:static;inset:auto;border-radius:0;width:70%;height:80%;margin-top:6%}
+.xc-in .xc-face .xc-logo{position:static;inset:auto;border-radius:0;width:56%;height:52%;background:url("../img/xa-mark.svg") center/contain no-repeat}
+.xc-in .xc-face .xc-shine{position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.45) 46%,transparent 60%);background-size:260% 100%;animation:xcShine 4.5s ease-in-out infinite}
+.xc-shadow{position:absolute;left:18%;right:18%;bottom:-12%;height:9%;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.42),transparent 70%);animation:xcShadow 9s cubic-bezier(.65,0,.35,1) infinite;animation-delay:var(--xc-d,0s);pointer-events:none}
+.xcoin{position:relative}
+/* sway on the avatar, flip to the logo, sway, flip back */
+@keyframes xcSpin{0%{transform:rotateX(6deg) rotateY(-20deg)}36%{transform:rotateX(6deg) rotateY(20deg)}50%{transform:rotateX(6deg) rotateY(160deg)}86%{transform:rotateX(6deg) rotateY(200deg)}100%{transform:rotateX(6deg) rotateY(340deg)}}
+@keyframes xcShine{0%,100%{background-position:120% 0}50%{background-position:-20% 0}}
+@keyframes xcShadow{0%,36%,50%,86%,100%{transform:scaleX(1)}43%,93%{transform:scaleX(.45)}}
+@media (prefers-reduced-motion:reduce){.xc-in,.xc-shadow,.xc-in .xc-face .xc-shine{animation:none}}
+/* placements that used to hold the flat mascot */
+.page-hero .xcoin.peek{aspect-ratio:1}
+.xcoin.promo-mascot{width:96px;margin-top:-88px}
