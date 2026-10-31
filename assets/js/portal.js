@@ -4,6 +4,7 @@
   const get = () => { try { return JSON.parse(localStorage.getItem("xa-student")); } catch (e) { return null; } };
   const set = s => { try { s ? localStorage.setItem("xa-student", JSON.stringify(s)) : localStorage.removeItem("xa-student"); } catch (e) {} };
 
+  const TEST_VIDEO = "nAgv3y3sZ0M"; /* Cambridge: changes to O Level English Language 1123 */
   const D = {
     wait: [["Directed writing: school canteen letter", "Test"], ["Composition: The Storm", "Test"]],
     skills: [["Reading", 68], ["Writing", 74], ["Summary", 61]],
@@ -26,15 +27,17 @@
       ["desc", "Descriptive composition", "Zoom in, use all five senses, control the pace."],
       ["narr", "Narrative composition", "Hook, tension, turning point, ending that lands."]
     ],
-    /* [topic, title, length, % watched] in lesson order within each topic */
+    /* [topic, title, length, % watched, YouTube video ID] in lesson order within each topic.
+       Upload each class to YouTube as Unlisted and paste its ID (the part after v= in the link).
+       TEST_VIDEO is a stand-in so the player can be tried before Sir's own videos are added */
     lectures: [
-      ["comp", "Explicit meaning practice", "31 min", 60],
-      ["lang", "Use of language: similes and metaphors", "28 min", 35],
-      ["summ", "Summary skills, part 1", "24 min", 100],
-      ["summ", "Summary skills, part 2", "27 min", 0],
-      ["dw", "Directed writing: argumentative letter", "36 min", 0],
-      ["desc", "Descriptive writing: a busy market", "33 min", 0],
-      ["narr", "Narrative: building suspense", "29 min", 0]
+      ["comp", "Explicit meaning practice", "31 min", 60, TEST_VIDEO],
+      ["lang", "Use of language: similes and metaphors", "28 min", 35, TEST_VIDEO],
+      ["summ", "Summary skills, part 1", "24 min", 100, TEST_VIDEO],
+      ["summ", "Summary skills, part 2", "27 min", 0, TEST_VIDEO],
+      ["dw", "Directed writing: argumentative letter", "36 min", 0, TEST_VIDEO],
+      ["desc", "Descriptive writing: a busy market", "33 min", 0, TEST_VIDEO],
+      ["narr", "Narrative: building suspense", "29 min", 0, TEST_VIDEO]
     ],
     papers: [["1123 May/June 2025 · Paper 1 Reading (12)", "Due Friday", "/past-papers?s=1123&y=2025&ss=s&c=12"], ["XA Practice Paper 1 · Reading", "Due next week", "/past-papers#practice"], ["1123 Oct/Nov 2024 · Paper 2 Writing (22)", "Done · 41/50", "/past-papers?s=1123&y=2024&ss=w&c=22"]],
     results: [["Diagnostic", "2 Sep", 29, 1], ["Reading test 1", "16 Sep", 33, 1], ["Writing test 1", "30 Sep", 35, 1], ["Reading test 2", "14 Oct", 38, 1], ["Mock 1", "21 Oct", 41, 1], ["Writing test 2", "28 Oct", null, 0]]
@@ -121,7 +124,15 @@
   document.getElementById("lecGrid").addEventListener("click", e => {
     const b = e.target.closest(".lec"); if (!b) return; const l = D.lectures[+b.dataset.l];
     document.getElementById("pl-title").textContent = l[1];
-    document.getElementById("plMeta").textContent = `${topicName(l[0])} · ${l[2]} · Recorded lectures play here once Sir uploads them to the course.`;
+    document.getElementById("plMeta").textContent = `${topicName(l[0])} · ${l[2]}`;
+    const scr = document.getElementById("screen"); scr.querySelectorAll("iframe").forEach(f => f.remove());
+    if (l[4]) {
+      const f = document.createElement("iframe");
+      /* no fullscreen button, so the moving student ID always stays on top of the video */
+      f.src = `https://www.youtube-nocookie.com/embed/${l[4]}?rel=0&modestbranding=1&playsinline=1&fs=0&disablekb=1&iv_load_policy=3&autoplay=1`;
+      f.title = l[1]; f.allow = "autoplay; encrypted-media; picture-in-picture"; f.referrerPolicy = "strict-origin-when-cross-origin";
+      scr.prepend(f); scr.classList.add("has-video");
+    } else scr.classList.remove("has-video");
     XA.openModal("player");
   });
 
@@ -144,7 +155,7 @@
     vx = Math.random() * 120 + 10; vy = Math.random() * 80 + 10;
     cancelAnimationFrame(vRaf); vRaf = requestAnimationFrame(vStep);
   }
-  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else cancelAnimationFrame(vRaf); })
+  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else { cancelAnimationFrame(vRaf); screen.querySelectorAll("iframe").forEach(f => f.remove()); } })
     .observe(player, { attributes: true, attributeFilter: ["class"] });
 
   /* notes and lectures black out when the app goes to the background, the window loses focus,
