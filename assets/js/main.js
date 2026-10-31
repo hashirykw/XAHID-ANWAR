@@ -39,25 +39,45 @@ window.XA = (function () {
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.02);
     }
-    /* coin flip: an airy whoosh that flutters like a spinning coin and pans across with the turn,
-       then a small bright "ting" with a soft knock as it lands on its face. Only after the visitor has touched the page */
-    let unlocked = false, noise = null;
-    ["pointerdown", "keydown", "touchstart"].forEach(ev => addEventListener(ev, () => { unlocked = true; }, { once: true, passive: true, capture: true }));
-    function coin(lag) {
-      if (!on || !unlocked) return; const c = ac(); if (!c || c.state !== "running") return;
-      const t = c.currentTime, L = Math.min(Math.max(lag || 0, 0), 0.3), at = x => t + Math.max(0, x - L);
-      if (!noise) { noise = c.createBuffer(1, Math.floor(c.sampleRate * 1.2), c.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    /* coin flip sound, shaped on the coin's own motion. Each flip turns 140deg in 1.26s on the ease
+       cubic-bezier(.65,0,.35,1): slow start, fastest in the middle, slow stop. The whoosh, its flutter and its
+       left-to-right pan follow that speed curve, and the "ting" + soft knock land the moment the turn finishes */
+    const FLIP = 1.26;
+    const flipCurves = (() => {
+      const bz = (a, b, u) => 3 * a * u * (1 - u) * (1 - u) + 3 * b * u * u * (1 - u) + u * u * u;
+      const at = x => { let lo = 0, hi = 1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (bz(.65, .35, m) < x) lo = m; else hi = m; } const u = (lo + hi) / 2; return bz(0, 1, u); };
+      const N = 96, prog = new Float32Array(N), speed = new Float32Array(N); let max = 0;
+      for (let i = 0; i < N; i++) { const x = i / (N - 1); prog[i] = at(x); }
+      for (let i = 0; i < N; i++) { const d = prog[Math.min(N - 1, i + 1)] - prog[Math.max(0, i - 1)]; speed[i] = d; if (d > max) max = d; }
+      const gain = new Float32Array(N), freq = new Float32Array(N), pan = new Float32Array(N), flutter = new Float32Array(N);
+      for (let i = 0; i < N; i++) { const v = speed[i] / max; gain[i] = 0.0001 + 0.06 * Math.pow(v, 1.4); freq[i] = 420 + 2500 * v; pan[i] = -0.4 + 0.78 * prog[i]; flutter[i] = 3 + 20 * v; }
+      return { gain, freq, pan, flutter };
+    })();
+    let noise = null;
+    const unlock = () => { if (on) ac(); };
+    ["pointerdown", "touchend", "keydown"].forEach(ev => addEventListener(ev, unlock, { passive: true, capture: true }));
+    /* when: seconds from now until the flip starts (negative = it started that long ago) */
+    function coin(when) {
+      if (!on) return; const c = ac(); if (!c || c.state !== "running") return;
+      const lat = (c.outputLatency || c.baseLatency || 0);
+      const t0 = c.currentTime + when - lat, now = c.currentTime + 0.005;
+      if (t0 + FLIP < now) return;
+      const startAt = Math.max(t0, now), skip = startAt - t0, len = FLIP - skip;
+      const slice = arr => { if (skip <= 0) return arr; const k = Math.min(arr.length - 2, Math.floor(skip / FLIP * (arr.length - 1))); return arr.subarray(k); };
+      if (!noise) { noise = c.createBuffer(1, Math.floor(c.sampleRate * 1.5), c.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
       const out = c.createGain(); out.gain.value = 1;
-      if (c.createStereoPanner) { const pn = c.createStereoPanner(); pn.pan.setValueAtTime(-0.35, t); pn.pan.linearRampToValueAtTime(0.3, at(1.05)); out.connect(pn).connect(c.destination); } else out.connect(c.destination);
-      const w0 = at(0.04), src = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(), trem = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
-      src.buffer = noise; bp.type = "bandpass"; bp.Q.value = 1.3;
-      bp.frequency.setValueAtTime(520, w0); bp.frequency.exponentialRampToValueAtTime(2600, w0 + 0.5); bp.frequency.exponentialRampToValueAtTime(820, w0 + 1);
-      g.gain.setValueAtTime(0.0001, w0); g.gain.exponentialRampToValueAtTime(0.055, w0 + 0.48); g.gain.exponentialRampToValueAtTime(0.0001, w0 + 1.02);
-      trem.gain.value = 0.62; lg.gain.value = 0.38; lfo.frequency.setValueAtTime(8, w0); lfo.frequency.linearRampToValueAtTime(19, w0 + 0.5); lfo.frequency.linearRampToValueAtTime(7, w0 + 1);
-      lfo.connect(lg).connect(trem.gain); src.connect(bp).connect(g).connect(trem).connect(out);
-      src.start(w0); src.stop(w0 + 1.1); lfo.start(w0); lfo.stop(w0 + 1.1);
-      const tt = at(1.0);
-      [[2637, 0.024, 1.15], [2643, 0.014, 1.0], [7278, 0.008, 0.55], [14240, 0.004, 0.28], [1319, 0.01, 0.45]].forEach(([f, v, d]) => {
+      if (c.createStereoPanner) { const pn = c.createStereoPanner(); if (len > 0.03) pn.pan.setValueCurveAtTime(slice(flipCurves.pan), startAt, len); out.connect(pn).connect(c.destination); } else out.connect(c.destination);
+      if (len > 0.03) {
+        const src = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(), trem = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+        src.buffer = noise; bp.type = "bandpass"; bp.Q.value = 1.2; trem.gain.value = 0.6; lg.gain.value = 0.4;
+        bp.frequency.setValueCurveAtTime(slice(flipCurves.freq), startAt, len);
+        g.gain.setValueCurveAtTime(slice(flipCurves.gain), startAt, len);
+        lfo.frequency.setValueCurveAtTime(slice(flipCurves.flutter), startAt, len);
+        lfo.connect(lg).connect(trem.gain); src.connect(bp).connect(g).connect(trem).connect(out);
+        src.start(startAt); src.stop(startAt + len + 0.02); lfo.start(startAt); lfo.stop(startAt + len + 0.02);
+      }
+      const tt = Math.max(t0 + FLIP, now);   /* the turn is complete: the coin settles on its face */
+      [[2637, 0.024, 1.2], [2643, 0.014, 1.05], [7278, 0.008, 0.55], [14240, 0.004, 0.28], [1319, 0.01, 0.45]].forEach(([f, v, d]) => {
         const o = c.createOscillator(), e = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(f, tt);
         e.gain.setValueAtTime(0.0001, tt); e.gain.exponentialRampToValueAtTime(v, tt + 0.004); e.gain.exponentialRampToValueAtTime(0.0001, tt + d);
         o.connect(e).connect(out); o.start(tt); o.stop(tt + d + 0.02);
@@ -77,19 +97,21 @@ window.XA = (function () {
       error: () => { tone(200, 150, 0.12, 0.06, "square"); tone(180, 130, 0.14, 0.05, "square", 0.14); },
       bell: () => [880, 660, 880].forEach((f, i) => tone(f, f * 0.98, 0.9, 0.07, "sine", i * 0.35)),
       tick: () => tone(1800, 0, 0.02, 0.02, "square"),
-      coin: lag => coin(lag),
+      coin: when => coin(when),
       get on() { return on; },
       set(v) { on = v; try { localStorage.setItem("xa-sfx", v ? "on" : "off"); } catch (e) {} document.documentElement.classList.toggle("muted-sfx", !v); }
     };
     document.documentElement.classList.toggle("muted-sfx", !on);
     return api;
   })();
-  /* the coin on screen makes its sound at each flip (avatar -> logo, logo -> avatar), in time with the turn.
-     If several coins are visible, only the biggest one plays, so they never talk over each other */
+  /* the coin on screen makes its sound at each flip (avatar -> logo, logo -> avatar). The flips are known in advance
+     from the animation clock, so each sound is booked on the audio clock a moment BEFORE the flip starts and
+     plays exactly with the movement, never after it. If several coins are visible, only the biggest one plays */
   (function coinSound() {
     if (reduce || !Element.prototype.getAnimations) return;
     const SPIN = 9000, FLIPS = [3240, 7740]; /* 36% and 86% of the 9s xcSpin cycle: where each flip starts */
-    const prev = new WeakMap();
+    const AHEAD = 320;                        /* ms: book the sound this far ahead */
+    let booked = { el: null, key: -1 };
     function pick() {
       let best = null, bw = 0;
       document.querySelectorAll(".xcoin .xc-in").forEach(el => {
@@ -103,15 +125,19 @@ window.XA = (function () {
     setInterval(() => {
       if (document.hidden || !sfx.on) return;
       const el = pick(); if (!el) return;
-      const a = el.getAnimations().find(x => x.animationName === "xcSpin"); if (!a || a.currentTime == null) return;
-      const now = performance.now(), t = ((a.currentTime % SPIN) + SPIN) % SPIN, q = prev.get(el); prev.set(el, { t, now });
-      if (!q || now - q.now > 400) return; /* this coin just came into view or took over: start listening from here */
-      const p = q.t;
-      for (const f of FLIPS) {
-        const crossed = p <= t ? (p < f && f <= t) : (p < f || f <= t), lag = (((t - f) + SPIN) % SPIN) / 1000;
-        if (crossed && lag < 0.4) { sfx.coin(lag); break; }
+      const a = el.getAnimations().find(x => x.animationName === "xcSpin");
+      if (!a || a.currentTime == null || a.playState !== "running") return;
+      const ct = a.currentTime, cyc = Math.floor(ct / SPIN), t = ct - cyc * SPIN;
+      for (let i = 0; i < FLIPS.length; i++) {
+        let dt = FLIPS[i] - t, c = cyc;
+        if (dt < -40) { dt += SPIN; c++; }            /* this flip is in the next cycle */
+        if (dt > AHEAD) continue;
+        const key = c * 2 + i;                       /* one booking per flip */
+        if (booked.el === el && booked.key === key) continue;
+        booked = { el, key };
+        sfx.coin(dt / 1000);
       }
-    }, 90);
+    }, 60);
   })();
   const sb = document.getElementById("soundBtn");
   if (sb) {
