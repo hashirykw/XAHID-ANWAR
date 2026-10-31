@@ -2,7 +2,7 @@
    Pages, styles and scripts: network first (so updates show straight away), cached copy when offline.
    Images and fonts: served from cache, refreshed in the background.
    Bump VERSION whenever you want every installed copy to clear its cache. */
-const VERSION = "xa-2026-10-31p";
+const VERSION = "xa-2026-10-31q";
 const CORE = [
   "/", "/ai-checker", "/portal", "/past-papers", "/books", "/offline.html",
   "/assets/css/base.css", "/assets/css/home.css", "/assets/css/ai.css", "/assets/css/portal.css", "/assets/css/papers.css", "/assets/css/books.css", "/assets/css/chat.css", "/assets/css/pwa.css", "/assets/css/steps.css", "/assets/css/slip.css",

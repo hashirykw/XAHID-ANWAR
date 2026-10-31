@@ -6,11 +6,11 @@
     ["The Professionals Core", "tpc", 300, 290], ["Success Institute", "success", 300, 195], ["EVO Institute", "evo", 300, 270], ["Panwala Institute", "panwala", 300, 299],
     ["The Caspian Institute", "tci", 300, 196], ["Brainiacs Digital Academy", "brainiacs", 234, 291], ["NexGen-Ed", "nexgen", 277, 300], ["Neogen", "neogen", 300, 279],
     ["MAX Academy", "max", 300, 136], ["Orb-Ed", "orbed", 236, 300], ["Class-Inn", "classinn", 300, 70], ["ed-360", "ed360", 300, 85], ["Siddiqui Tutor Academy", "sta", 300, 126],
-    ["The Taurus School", "taurus", 300, 233], ["The American Foundation Cambridge School", "afcs", 300, 290],
-    ["Kashan's Academy", "kashan", 284, 300], ["Gives Academy", "gives", 300, 164],
-    ["The Cedar School", "cedar", 300, 238], ["TAFS", "afcs", 300, 290], ["Beaconhouse School System", "bss", 245, 300], ["The Nexus School", "nexus", 288, 300],
-    ["The Brighton School", "brighton", 294, 300], ["BODMAS School System", "bodmas", 300, 291], ["SKH Solutions", "skh", 283, 300], ["SWK Solution", "swk", 284, 300],
-    ["Askari Bahadurabad", "askari", 269, 300], ["MAB Academy", "mab", 300, 190]
+    ["The Taurus School", "taurus", 232, 186], ["The American Foundation Cambridge School", "afcs", 294, 284],
+    ["Kashan's Academy", "kashan", 209, 241], ["Gives Academy", "gives", 360, 159],
+    ["The Cedar School", "cedar", 287, 103], ["TAFS", "afcs", 294, 284], ["Beaconhouse School System", "bss", 159, 157], ["The Nexus School", "nexus", 338, 360],
+    ["The Brighton School", "brighton", 210, 98], ["BODMAS School System", "bodmas", 348, 347], ["SKH Solutions", "skh", 207, 203], ["SWK Solution", "swk", 248, 258],
+    ["Askari Bahadurabad", "askari", 149, 174], ["MAB Academy", "mab", 287, 125]
   ];
   const AREA = 3000, MAXW = 116, MAXH = 60;
   function fit(w, h) {
@@ -21,7 +21,7 @@
   const wall = document.getElementById("logoWall");
   wall.innerHTML = affils.map(a => {
     let vis;
-    if (a[1]) { const [w, h] = fit(a[2], a[3]); vis = `<span class="lg"><img src="/assets/img/logos/${a[1]}.webp" alt="${a[0]} logo" width="${a[2]}" height="${a[3]}" style="--w:${w};--h:${h}" loading="lazy" decoding="async"></span>`; }
+    if (a[1]) { const [w, h] = fit(a[2], a[3]); vis = `<span class="lg"><img src="/assets/img/logos/${a[1]}.webp" alt="${a[0]} logo" width="${a[2]}" height="${a[3]}" style="--w:${w};--h:${h}" loading="lazy" decoding="async" onload="this.classList.add('in')"></span>`; }
     else vis = `<span class="lg"><span class="mono" style="--c:${a[3]}" aria-hidden="true">${a[2]}</span></span>`;
     return `<li title="${a[0]}">${vis}<span class="nm">${a[0]}</span></li>`;
   }).join("");
