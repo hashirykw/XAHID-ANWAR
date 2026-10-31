@@ -133,6 +133,9 @@
       f.title = l[1]; f.allow = "autoplay; encrypted-media; picture-in-picture"; f.referrerPolicy = "strict-origin-when-cross-origin";
       scr.prepend(f); scr.classList.add("has-video");
     } else scr.classList.remove("has-video");
+    /* real fullscreen on the whole player (video + moving ID + close button); phones turn sideways */
+    const box = document.getElementById("playerBox"), fs = box.requestFullscreen || box.webkitRequestFullscreen;
+    if (fs) { try { const r = fs.call(box); if (r && r.then) r.then(() => { try { window.screen.orientation.lock("landscape").catch(() => {}); } catch (e) {} }).catch(() => {}); } catch (e) {} }
     XA.openModal("player");
   });
 
@@ -155,7 +158,7 @@
     vx = Math.random() * 120 + 10; vy = Math.random() * 80 + 10;
     cancelAnimationFrame(vRaf); vRaf = requestAnimationFrame(vStep);
   }
-  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else { cancelAnimationFrame(vRaf); screen.querySelectorAll("iframe").forEach(f => f.remove()); } })
+  new MutationObserver(() => { if (player.classList.contains("open")) vStart(); else { cancelAnimationFrame(vRaf); screen.querySelectorAll("iframe").forEach(f => f.remove()); const fe = document.fullscreenElement || document.webkitFullscreenElement; if (fe) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} } try { window.screen.orientation.unlock(); } catch (e) {} } })
     .observe(player, { attributes: true, attributeFilter: ["class"] });
 
   /* notes and lectures black out when the app goes to the background, the window loses focus,
@@ -183,6 +186,7 @@
     if (k === "printscreen" && navigator.clipboard) navigator.clipboard.writeText("").catch(() => {});
   }, true);
   addEventListener("keyup", e => { if ((e.key || "").toLowerCase() === "printscreen" && guarded().length) { shield(true, 2500); if (navigator.clipboard) navigator.clipboard.writeText("").catch(() => {}); } }, true);
+  document.querySelectorAll(".shield").forEach(sh => sh.addEventListener("click", e => { e.stopPropagation(); if (!document.hidden) shield(false); }));
   document.addEventListener("copy", e => { if (guarded().length) e.preventDefault(); });
   document.addEventListener("dragstart", e => { if (e.target.closest && e.target.closest("#reader, #player")) e.preventDefault(); });
 

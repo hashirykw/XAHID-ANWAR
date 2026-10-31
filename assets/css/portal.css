@@ -199,7 +199,10 @@
 .pw-eye.on .eye-off{display:block}
 
 /* notes and lectures go black when the app loses focus, a screenshot key is pressed, or the page is printed */
-.shield{position:absolute;inset:0;z-index:20;border-radius:inherit;background:#000;color:rgba(255,255,255,.75);display:none;place-items:center;text-align:center;padding:24px;font-weight:600}
+.shield{position:absolute;inset:0;z-index:20;border-radius:inherit;background:#000;color:#fff;display:none;place-content:center;justify-items:center;gap:8px;text-align:center;padding:24px;cursor:pointer}
+.shield::before{content:"";width:46px;height:46px;margin-bottom:4px;background:var(--ember);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E") center/contain no-repeat}
+.shield b{font-family:var(--display);font-size:1.15rem}
+.shield span{max-width:340px;color:rgba(255,255,255,.72);font-size:.92rem;line-height:1.5}
 .modal.shielded .shield{display:grid}
 .modal.shielded .reader,.modal.shielded .screen>:not(.shield){visibility:hidden}
 .reader,.screen{-webkit-touch-callout:none}
@@ -207,9 +210,25 @@
 
 /* moving student ID over a playing lecture */
 .screen{position:relative;overflow:hidden}
-.vwm{position:absolute;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;font-weight:700;font-size:clamp(.72rem,1.8vw,.95rem);color:rgba(255,255,255,.55);text-shadow:0 1px 2px rgba(0,0,0,.6);will-change:transform;user-select:none}
+.vwm{position:absolute;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;font-weight:700;font-size:clamp(.8rem,1.5vw,1.15rem);color:rgba(255,255,255,.55);text-shadow:0 1px 2px rgba(0,0,0,.6);will-change:transform;user-select:none}
 
 /* YouTube lecture inside the player; the ID watermark and blackout sit above it */
 .screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
 .screen.has-video>.mascot,.screen.has-video>span:not(.vwm){display:none}
 .screen .shield{z-index:20}
+
+/* lecture player fills the whole screen; close button always on top */
+#player{padding:0;background:#000;backdrop-filter:none;-webkit-backdrop-filter:none}
+#player .player-box{position:relative;width:100vw;height:100dvh;max-width:none;max-height:none;border-radius:0;padding:0;background:#000;color:#fff;display:grid;grid-template-rows:1fr auto;gap:0;overflow:hidden}
+#player .screen{aspect-ratio:auto;width:100%;height:100%;border-radius:0;background:#000}
+#player .pl-info{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:12px max(18px,env(safe-area-inset-left)) max(14px,env(safe-area-inset-bottom));background:#0b0907}
+#player .pl-info h3{font-size:1rem;margin:0;color:#fff}
+#player .pl-info p{margin:0;color:rgba(255,255,255,.6);font-size:.86rem}
+.pl-close,.rd-close{display:grid;place-items:center;color:var(--ink);background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 0 2px rgba(26,20,16,.12)}
+.pl-close svg,.rd-close svg{width:22px;height:22px}
+.pl-close{position:absolute;z-index:40;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));width:50px;height:50px;border-radius:50%}
+.pl-close:hover{background:var(--ember)!important;color:#fff}
+.rd-close{z-index:30;width:46px;height:46px;border-radius:50%}
+.rd-close:hover{background:var(--ember)!important;color:#fff}
+#playerBox:fullscreen{width:100vw;height:100vh}
+@media (orientation:landscape) and (max-height:500px){#player .pl-info{display:none}}
