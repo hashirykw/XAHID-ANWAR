@@ -2,4 +2,15 @@ User-agent: *
 Allow: /
 Disallow: /practice/
 
+# Link-preview bots may read every page so shared links show their picture
+User-agent: facebookexternalhit
+User-agent: Facebot
+User-agent: WhatsApp
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: TelegramBot
+User-agent: Slackbot
+User-agent: Discordbot
+Allow: /
+
 Sitemap: https://englishwithsxa.com/sitemap.xml
