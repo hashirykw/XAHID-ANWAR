@@ -44,6 +44,8 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - Affiliations shown on the home page: `affils` in `assets/js/home.js`
 - Timed-mode exit phrase and Sir's override key: `PHRASE` and `MAGIC` in `assets/js/papers.js`
 - Past-paper source: `SRC` in `assets/js/papers.js`
+- Portal topics, notes and lectures: `topics`, `notes`, `lectures` in `assets/js/portal.js`. Topics are listed in syllabus order and notes and lectures are shown grouped topic by topic in that order
+- Course material protection (portal): notes and lectures black out when the app goes to the background, loses focus, or a screenshot or print shortcut is pressed; the student ID drifts across the lecture video the whole time it is open. A browser cannot stop a phone's own screenshot buttons, so the ID watermark is what traces a leaked copy
 
 Portal sign-in, AI marking and student data are front end only until the backend (Supabase + a server function for the AI) is connected.
 

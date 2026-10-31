@@ -1,5 +1,5 @@
 /* ---------- Student Portal ---------- */
-.auth{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;min-height:100dvh;padding:130px 0 80px;display:flex;align-items:center}
+.auth{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;min-height:100dvh;padding:calc(130px + var(--nx)) 0 80px;display:flex;align-items:center}
 .auth::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.22;mix-blend-mode:multiply;z-index:-1}
 .auth::after{content:"";position:absolute;width:760px;height:760px;right:-200px;top:-160px;border-radius:50%;background:radial-gradient(circle,var(--ember-glow),transparent 65%);z-index:-1}
 .auth-grid{display:grid;gap:44px;align-items:center}
@@ -22,7 +22,7 @@
 .auth-foot a{font-weight:600}
 
 /* dashboard */
-.dash{background:var(--bone);min-height:100dvh;padding:100px 0 40px;position:relative;isolation:isolate;overflow:hidden}
+.dash{background:var(--bone);min-height:100dvh;padding:calc(100px + var(--nx)) 0 40px;position:relative;isolation:isolate;overflow:hidden}
 .dash::before{content:"";position:absolute;width:640px;height:640px;right:-200px;top:-160px;border-radius:50%;background:radial-gradient(circle,rgba(217,68,15,.22),transparent 65%);z-index:-1}
 .dash-wrap{max-width:1280px;margin:0 auto;padding:0 var(--gut);display:grid;gap:22px}
 @media (min-width:1000px){.dash-wrap{grid-template-columns:250px 1fr;align-items:start}}
@@ -176,3 +176,35 @@
 .v-done p{color:var(--muted);max-width:38ch}
 .v-done b{color:var(--ink)}
 @keyframes vIn{from{opacity:0;transform:translateY(10px)}}
+
+/* notes and lectures, grouped topic by topic in syllabus order */
+.topics{display:grid;gap:26px}
+.topic{display:grid;gap:12px;min-width:0}
+.topic-h{display:flex;align-items:center;gap:12px}
+.topic-n{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--ink);color:var(--marigold);font-family:var(--display);font-weight:700;font-size:.85rem}
+.topic-h h3{font-size:1.05rem;margin:0}
+.topic-h small{color:var(--muted);font-size:.8rem;font-weight:600}
+.topic-row{display:grid;gap:12px}
+@media (min-width:640px){.topic-row{grid-template-columns:1fr 1fr}}
+@media (min-width:1200px){.topic-row{grid-template-columns:repeat(3,1fr)}}
+.lec .thumb .lec-no{position:absolute;right:10px;top:10px;padding:3px 9px;border-radius:var(--r-tag);background:rgba(26,20,16,.7);color:#fff;font-size:.72rem;font-weight:700}
+
+/* password show / hide */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:54px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer}
+.pw-eye:hover{background:rgba(26,20,16,.08)}
+.pw-eye svg{width:21px;height:21px}
+.pw-eye .eye-off,.pw-eye.on .eye-on{display:none}
+.pw-eye.on .eye-off{display:block}
+
+/* notes and lectures go black when the app loses focus, a screenshot key is pressed, or the page is printed */
+.shield{position:absolute;inset:0;z-index:20;border-radius:inherit;background:#000;color:rgba(255,255,255,.75);display:none;place-items:center;text-align:center;padding:24px;font-weight:600}
+.modal.shielded .shield{display:grid}
+.modal.shielded .reader,.modal.shielded .screen>:not(.shield){visibility:hidden}
+.reader,.screen{-webkit-touch-callout:none}
+@media print{body *{visibility:hidden!important}body::after{content:"Printing is turned off for course material.";visibility:visible;position:fixed;inset:0;display:grid;place-items:center;font:600 18px sans-serif}}
+
+/* moving student ID over a playing lecture */
+.screen{position:relative;overflow:hidden}
+.vwm{position:absolute;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;font-weight:700;font-size:clamp(.72rem,1.8vw,.95rem);color:rgba(255,255,255,.55);text-shadow:0 1px 2px rgba(0,0,0,.6);will-change:transform;user-select:none}

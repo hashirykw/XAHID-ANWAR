@@ -1,5 +1,5 @@
 /* ---------- Books ---------- */
-.book-hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;padding:132px 0 80px}
+.book-hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;isolation:isolate;padding:calc(132px + var(--nx)) 0 80px}
 .book-hero::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.22;mix-blend-mode:multiply;z-index:-1}
 .book-hero::after{content:"";position:absolute;width:760px;height:760px;right:-180px;top:-160px;border-radius:50%;background:radial-gradient(circle,var(--ember-glow),transparent 65%);z-index:-1}
 .bh-grid{display:grid;gap:40px;align-items:center}

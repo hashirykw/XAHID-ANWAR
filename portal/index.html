@@ -90,7 +90,7 @@
         <h2>Sign in</h2>
         <div class="form-grid">
           <div class="field"><label for="l-id">Student ID</label><input id="l-id" name="id" placeholder="XA-1234" autocomplete="username" required><span class="err">Enter your student ID, it starts with XA.</span></div>
-          <div class="field"><label for="l-pw">Password</label><input id="l-pw" name="pw" type="password" autocomplete="current-password" required><span class="err">Enter your password.</span></div>
+          <div class="field"><label for="l-pw">Password</label><div class="pw-wrap"><input id="l-pw" name="pw" type="password" autocomplete="current-password" required><button class="pw-eye" type="button" id="pwEye" data-plain aria-label="Show password" aria-pressed="false"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div><span class="err">Enter your password.</span></div>
           <button class="btn" type="submit">Sign in</button>
           <button class="btn btn-glass" type="button" id="demoBtn">Try the demo student</button>
         </div>
@@ -194,10 +194,13 @@
 
       <div class="view" data-view="notes" hidden>
         <div class="filters" id="noteFilters"><button class="pill on" data-f="all">All</button><button class="pill" data-f="Reading">Reading</button><button class="pill" data-f="Writing">Writing</button></div>
-        <div class="note-grid swipe-m" id="noteGrid"></div>
+        <div class="topics" id="noteGrid"></div>
       </div>
 
-      <div class="view" data-view="lectures" hidden><div class="lec-grid swipe-m" id="lecGrid"></div></div>
+      <div class="view" data-view="lectures" hidden>
+        <div class="filters" id="lecFilters"><button class="pill on" data-f="all">All</button><button class="pill" data-f="Reading">Reading</button><button class="pill" data-f="Writing">Writing</button></div>
+        <div class="topics" id="lecGrid"></div>
+      </div>
 
       <div class="view" data-view="papers" hidden>
         <div class="paper-list" id="paperList"></div>
@@ -216,12 +219,13 @@
   <div class="modal-box reader-box" style="position:relative">
     <button class="modal-close" type="button" aria-label="Close">×</button>
     <div class="reader" id="readerBody"></div>
+    <div class="shield" aria-hidden="true">Notes are hidden while the app is in the background.</div>
   </div>
 </div>
 <div class="modal" id="player" role="dialog" aria-modal="true" aria-labelledby="pl-title">
   <div class="modal-box player-box" style="position:relative">
     <button class="modal-close" type="button" aria-label="Close">×</button>
-    <div class="screen"><i class="mascot"></i><span>Lecture video</span></div>
+    <div class="screen" id="screen"><i class="mascot"></i><span>Lecture video</span><span class="vwm" id="vwm" aria-hidden="true"></span><div class="shield" aria-hidden="true">Video is hidden while the app is in the background.</div></div>
     <h3 id="pl-title">Lecture</h3>
     <p class="muted" id="plMeta"></p>
   </div>

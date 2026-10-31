@@ -1,5 +1,5 @@
 /* ---------- Home ---------- */
-.hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;padding:120px 0 0;isolation:isolate}
+.hero{position:relative;background:var(--ember);color:var(--bone-2);overflow:hidden;padding:calc(120px + var(--nx)) 0 0;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.22;mix-blend-mode:multiply;z-index:-1}
 .hero::after{content:"";position:absolute;width:780px;height:780px;right:-200px;top:-120px;border-radius:50%;background:radial-gradient(circle,var(--ember-glow),rgba(242,140,40,0) 65%);z-index:-1}
 .hero-grid{display:grid;gap:28px;align-items:end}
@@ -32,7 +32,7 @@
   .ring{width:42px;height:42px}.ring::before{width:34px;height:34px}
 }
 @media (min-width:900px){
-  .hero{padding-top:140px}
+  .hero{padding-top:calc(140px + var(--nx))}
   .hero-grid{grid-template-columns:1.08fr .92fr;gap:24px}
   .hero-copy{padding-bottom:96px}
   .hero-visual{min-height:600px}

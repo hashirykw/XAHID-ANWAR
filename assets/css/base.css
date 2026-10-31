@@ -2,6 +2,8 @@
    Sir Xahid Anwar · shared styles (every page loads this)
    ========================================================= */
 :root{
+  /* extra space when the phone puts the nav under a notch / status bar (0 on normal browsers) */
+  --nx:max(0px,calc(env(safe-area-inset-top,0px) - 6px));
   --ember:#D9440F; --ember-deep:#B8360A; --ember-soft:#F06A2E; --ember-glow:rgba(242,140,40,.55);
   --ink:#1A1410; --ink-2:#241C17; --ink-3:#30261F;
   --bone:#EDE8DC; --bone-2:#F6F2EA; --paper:#FBF8F2;
@@ -16,7 +18,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html{font-size:clamp(14.25px,13px + .32vw,16px);-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:96px;scrollbar-color:var(--ember) var(--ink);scrollbar-width:thin}
+html{font-size:clamp(14.25px,13px + .32vw,16px);-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(96px + var(--nx));scrollbar-color:var(--ember) var(--ink);scrollbar-width:thin}
 body{margin:0;font-family:var(--body);font-size:1rem;line-height:1.6;color:var(--text);background:var(--paper);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
@@ -122,7 +124,7 @@ p{margin:0}
 @media (max-width:420px){.brand-text small{display:none}.nav-cta{display:none}}
 
 /* menu panel (small dropdown, not full screen) */
-.sheet{position:fixed;z-index:49;top:86px;right:var(--gut);width:min(340px,calc(100vw - 2*var(--gut)));border-radius:var(--r-lg);padding:10px;color:var(--bone-2);
+.sheet{position:fixed;z-index:49;top:calc(86px + var(--nx));max-height:calc(100dvh - 98px - var(--nx));overflow-y:auto;overscroll-behavior:contain;right:var(--gut);width:min(340px,calc(100vw - 2*var(--gut)));border-radius:var(--r-lg);padding:10px;color:var(--bone-2);
   opacity:0;visibility:hidden;transform:translateY(-10px) scale(.96);transform-origin:top right;transition:opacity .25s var(--ease),transform .3s var(--ease),visibility 0s .3s}
 .menu-open .sheet{opacity:1;visibility:visible;transform:none;transition:opacity .25s var(--ease),transform .3s var(--ease)}
 .sheet ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}

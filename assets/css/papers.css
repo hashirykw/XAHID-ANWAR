@@ -5,7 +5,7 @@
 .hero-stats b{font-family:var(--display);font-size:.95rem}
 .finder{background:var(--paper);position:relative;isolation:isolate;padding-top:56px;overflow-x:clip}
 .finder::before{content:"";position:absolute;width:600px;height:600px;left:-220px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(217,68,15,.16),transparent 65%);z-index:-1}
-.filter-bar{display:grid;gap:14px;padding:18px;border-radius:var(--r-xl);position:sticky;top:90px;z-index:20}
+.filter-bar{display:grid;gap:14px;padding:18px;border-radius:var(--r-xl);position:sticky;top:calc(90px + var(--nx));z-index:20}
 @media (min-width:900px){.filter-bar{grid-template-columns:auto 1fr 1fr 1.4fr;align-items:end}}
 @media (max-width:899px){.filter-bar{position:relative;top:0;grid-template-columns:1fr 1fr}.filter-bar .field:first-child{grid-column:1/-1}.filter-bar .field:last-child{grid-column:1/-1}.filter-bar .seg{flex-wrap:nowrap;overflow-x:auto}}
 .results-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;margin:22px 0 14px}
