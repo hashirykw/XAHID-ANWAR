@@ -27,7 +27,9 @@
 .ring span{grid-area:1/1;position:relative;font-family:var(--display);font-weight:700;font-size:.8rem}
 @media (max-width:899px){
   .hero-card{font-size:.76rem;padding:9px 11px}.hero-card b{font-size:.82rem}
-  .gc-admit{top:8%;right:-4px;max-width:170px}
+  /* phones: sits on the shoulder, clear of Sir's face, title on one line */
+  .gc-admit{top:auto;bottom:36%;right:-4px;max-width:200px}
+  .gc-admit b{white-space:nowrap}
   .gc-score{bottom:14%;left:-4px}
   .ring{width:42px;height:42px}.ring::before{width:34px;height:34px}
 }
