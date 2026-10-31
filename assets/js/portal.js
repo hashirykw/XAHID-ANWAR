@@ -121,12 +121,13 @@
       proof: () => XA_SLIP.hasFile(vf)
     }, () => {
       const data = new FormData(vf);
-      vf.classList.add("sending");
-      XA_SLIP.send(data, p => { bar.style.width = p + "%"; }).then(() => {
+      const fx = window.XA_FX;
+      vf.classList.add("sending"); if (fx) fx.start(vf, "upload");
+      XA_SLIP.send(data, p => { bar.style.width = p + "%"; if (fx) fx.progress(vf, p); }).then(() => fx ? fx.done(vf, "Slip sent") : null).then(() => {
         vf.classList.remove("sending"); vf.classList.add("sent");
         document.getElementById("vDoneNum").textContent = data.get("phone");
         vf.scrollIntoView({ behavior: XA.reduce ? "auto" : "smooth", block: "center" });
-      }).catch(() => { vf.classList.remove("sending"); const b = document.getElementById("dropBox"); b.classList.add("invalid"); b.querySelector(".err").textContent = "The upload didn't go through. Check your internet and try again."; XA.sfx.error(); });
+      }).catch(() => { vf.classList.remove("sending", "fx-busy"); const sb = vf.querySelector("[type=submit]"); if (sb) { sb.classList.remove("fx-on", "fx-go", "fx-ok"); sb.disabled = false; } const b = document.getElementById("dropBox"); b.classList.add("invalid"); b.querySelector(".err").textContent = "The upload didn't go through. Check your internet and try again."; XA.sfx.error(); });
     });
     document.getElementById("verifyAgain").addEventListener("click", () => {
       vf.reset(); vf.classList.remove("sent"); bar.style.width = "0%";

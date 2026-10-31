@@ -107,19 +107,20 @@
     if (existing()) {
       const data = new FormData(form);
       ["email", "school", "note"].forEach(k => data.delete(k));
-      form.classList.add("sending");
-      XA_SLIP.send(data, p => { bar.style.width = p + "%"; }).then(() => {
+      const fx = window.XA_FX;
+      form.classList.add("sending"); if (fx) fx.start(form, "upload");
+      XA_SLIP.send(data, p => { bar.style.width = p + "%"; if (fx) fx.progress(form, p); }).then(() => fx ? fx.done(form, "Slip sent") : null).then(() => {
         form.classList.remove("sending");
         document.getElementById("regDoneH").textContent = "Got it, thank you";
         document.getElementById("regDoneP").innerHTML = `Sir's team will check your slip and send your student ID and password on WhatsApp to <b>${f.phone.replace(/</g, "")}</b>.`;
         form.classList.add("sent");
-      }).catch(() => { form.classList.remove("sending"); const b = document.getElementById("fDropBox"); b.classList.add("invalid"); b.querySelector(".err").textContent = "The upload didn't go through. Check your internet and try again."; XA.sfx.error(); });
+      }).catch(() => { form.classList.remove("sending", "fx-busy"); const sb = form.querySelector("[type=submit]"); if (sb) { sb.classList.remove("fx-on", "fx-go", "fx-ok"); sb.disabled = false; } const b = document.getElementById("fDropBox"); b.classList.add("invalid"); b.querySelector(".err").textContent = "The upload didn't go through. Check your internet and try again."; XA.sfx.error(); });
       return;
     }
     XA.wa(`Assalam o Alaikum Sir, I'd like a student portal login.\n\nName: ${f.name}\nWhatsApp: ${f.phone}${f.email ? `\nEmail: ${f.email}` : ""}${f.school ? `\nSchool: ${f.school}` : ""}\nSyllabus: ${f.syllabus}\nSession: ${f.session}\nCampus: ${f.centre}${f.note ? `\nNote: ${f.note}` : ""}`);
     document.getElementById("regDoneH").textContent = "WhatsApp is open with your details";
     document.getElementById("regDoneP").textContent = "Press send there and Sir's team will reply with your portal login.";
-    form.classList.add("sent");
+    (window.XA_FX ? XA_FX.play(form, "send", "Sent to WhatsApp") : Promise.resolve()).then(() => form.classList.add("sent"));
   });
   document.getElementById("regAgain").addEventListener("click", () => { form.reset(); form.classList.remove("sent"); bar.style.width = "0%"; setTimeout(mode, 0); });
 })();

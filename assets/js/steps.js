@@ -162,3 +162,67 @@
     setTimeout(() => layer.remove(), 1900);
   }
 })();
+
+/* ---------- submit button launch: icon rides a moving road while a neon line traces the button,
+   then it drives off, the button turns green and says it's done (XA_FX.play / start / progress / done) ---------- */
+(function () {
+  if (window.XA_FX) return;
+  const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const ICONS = {
+    truck: '<svg viewBox="0 0 32 24" fill="currentColor"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h14A1.5 1.5 0 0 1 19 5.5V8h4.4a2 2 0 0 1 1.6.8l3.6 4.8a2 2 0 0 1 .4 1.2V18a1.5 1.5 0 0 1-1.5 1.5h-1.1a3.3 3.3 0 0 1-6.5 0h-6.6a3.3 3.3 0 0 1-6.5 0H3.5A1.5 1.5 0 0 1 2 18zM21 10.5V14h5.4l-2.6-3.5zM8.3 17.3a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zm13.1 0a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4z"/></svg>',
+    send: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.6 10.4 20.1 3.1c.9-.4 1.8.5 1.4 1.4l-7.3 17.5c-.4 1-1.8.9-2.1-.1l-1.9-6.4a1 1 0 0 0-.6-.6l-6.4-1.9c-1-.3-1.1-1.7-.1-2.1z"/></svg>',
+    upload: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h8.6L20 7.4V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5zM12 10l-4 4h2.8v4h2.4v-4H16z"/></svg>'
+  };
+  function setup(form, icon) {
+    const btn = form.querySelector("[type=submit]"); if (!btn) return null;
+    let fx = btn.querySelector(".fx");
+    if (!fx) {
+      fx = document.createElement("span"); fx.className = "fx"; fx.setAttribute("aria-hidden", "true");
+      fx.innerHTML = '<svg class="fx-ring" preserveAspectRatio="none"><rect class="fx-track" pathLength="100"/><rect class="fx-trace" pathLength="100"/></svg><span class="fx-road"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="fx-ico"></span><span class="fx-done"></span>';
+      btn.appendChild(fx);
+    }
+    const r = btn.getBoundingClientRect(), rad = parseFloat(getComputedStyle(btn).borderTopLeftRadius) || 14;
+    const svg = fx.querySelector("svg"); svg.setAttribute("viewBox", `0 0 ${r.width} ${r.height}`);
+    fx.querySelectorAll("rect").forEach(rc => { rc.setAttribute("x", 1.5); rc.setAttribute("y", 1.5); rc.setAttribute("width", r.width - 3); rc.setAttribute("height", r.height - 3); rc.setAttribute("rx", Math.max(0, rad - 1.5)); });
+    fx.querySelector(".fx-ico").innerHTML = ICONS[icon] || ICONS.send;
+    btn.style.setProperty("--fxp", 0);
+    return btn;
+  }
+  function start(form, icon) {
+    const btn = setup(form, icon); if (!btn) return;
+    btn.classList.remove("fx-ok", "fx-go"); btn.disabled = true; btn.setAttribute("aria-busy", "true");
+    btn.classList.add("fx-on"); form.classList.add("fx-busy");
+  }
+  function progress(form, p) {
+    const btn = form.querySelector("[type=submit]"); if (!btn) return;
+    p = Math.max(0, Math.min(100, p)); btn.style.setProperty("--fxp", p);
+    const t = btn.querySelector(".fx-trace"); if (t) t.style.strokeDasharray = `${p} ${100 - p + 0.001}`;
+  }
+  function done(form, label) {
+    const btn = form.querySelector("[type=submit]"); if (!btn) return Promise.resolve();
+    progress(form, 100);
+    btn.querySelector(".fx-done").textContent = label || "Done";
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    if (reduce) { btn.classList.add("fx-ok"); return wait(600).then(() => reset(form)); }
+    return wait(420)
+      .then(() => { btn.classList.add("fx-go"); return wait(480); })                               /* icon drives off */
+      .then(() => { const t = btn.querySelector(".fx-trace"); if (t) t.style.strokeDasharray = "100 0"; btn.classList.add("fx-ok"); if (window.XA) XA.sfx.success(); return wait(1300); }) /* turns green */
+      .then(() => reset(form));
+  }
+  /* run the whole thing on a timer (used when the real work already happened, e.g. WhatsApp opened) */
+  function play(form, icon, label, ms) {
+    start(form, icon);
+    if (reduce) return done(form, label);
+    const t0 = performance.now(), dur = ms || 1500;
+    return new Promise(res => {
+      (function tick(now) { const k = Math.min(1, (now - t0) / dur); progress(form, (1 - Math.pow(1 - k, 2)) * 100); k < 1 ? requestAnimationFrame(tick) : res(); })(t0);
+    }).then(() => done(form, label));
+  }
+  function reset(form) {
+    const btn = form.querySelector("[type=submit]"); if (!btn) return;
+    form.classList.remove("fx-busy");
+    /* leave the green state on screen; the form swaps to its "sent" panel straight after */
+    setTimeout(() => { btn.classList.remove("fx-on", "fx-go", "fx-ok"); btn.disabled = false; btn.removeAttribute("aria-busy"); btn.style.setProperty("--fxp", 0); }, 400);
+  }
+  window.XA_FX = { start, progress, done, play };
+})();

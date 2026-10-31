@@ -81,3 +81,34 @@
 .fs-confetti i{position:absolute;width:var(--w);height:var(--h);margin:-4px 0 0 -4px;animation:fsBoom var(--d) cubic-bezier(.15,.6,.35,1) forwards}
 @keyframes fsBoom{0%{transform:translate(0,0) rotate(0);opacity:1}60%{opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + var(--fall))) rotate(var(--rot));opacity:0}}
 @media (prefers-reduced-motion:reduce){.fstep.in-r,.fstep.in-l,.fstep.on>.field,.fs-name{animation:none}.fs-steps{transition:none}}
+
+/* ---------- submit button launch (XA_FX in steps.js) ---------- */
+.btn .fx{position:absolute;inset:0;z-index:5;display:none;pointer-events:none;border-radius:inherit}
+.btn.fx-on{background:#14100D!important;color:#fff!important;transform:none!important;cursor:default;opacity:1!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 18px 40px -16px rgba(255,190,40,calc(.15 + var(--fxp,0) * .006));transition:box-shadow .4s,background .4s}
+.btn.fx-on .fx{display:block}
+.btn.fx-on>.btn-l,.btn.fx-on>.btn-i,.btn.fx-on>.btn-fill,.btn.fx-on>svg{opacity:0;transform:scale(.85);transition:opacity .25s,transform .35s var(--ease-o)}
+.btn .fx .fx-ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fx-ring rect{fill:none;stroke-width:2.2;vector-effect:non-scaling-stroke}
+.fx-track{stroke:rgba(255,255,255,.16)}
+.fx-trace{stroke:#FFC83D;stroke-linecap:round;stroke-dasharray:0 100;stroke-width:3!important;filter:drop-shadow(0 0 4px rgba(255,200,61,.95)) drop-shadow(0 0 12px rgba(255,170,30,.7));transition:stroke-dasharray .25s linear,stroke .4s}
+.fx-road{position:absolute;left:12%;right:12%;bottom:22%;height:2px;display:flex;justify-content:space-between;overflow:hidden;opacity:.55}
+.fx-road i{flex:none;width:9%;height:2px;border-radius:2px;background:#FFC83D;animation:fxRoad .5s linear infinite}
+@keyframes fxRoad{to{transform:translateX(-240%)}}
+.fx-ico{position:absolute;left:50%;top:50%;width:30px;height:24px;margin:-14px 0 0 -15px;color:#FFC83D;filter:drop-shadow(0 0 6px rgba(255,200,61,.8));animation:fxIn .45s cubic-bezier(.34,1.56,.64,1) both,fxBump .32s ease-in-out .45s infinite alternate}
+.btn .fx .fx-ico svg{width:100%;height:100%}
+@keyframes fxIn{from{transform:translateX(-60px) scale(.6);opacity:0}}
+@keyframes fxBump{to{transform:translateY(-1.5px)}}
+.btn.fx-go .fx-ico{animation:fxGo .5s cubic-bezier(.55,0,.75,.2) forwards}
+@keyframes fxGo{to{transform:translateX(220px) scaleX(1.25);opacity:0;filter:blur(3px) drop-shadow(0 0 6px rgba(255,200,61,.8))}}
+.btn.fx-go .fx-road{opacity:0;transition:opacity .3s}
+.fx-done{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.86rem;color:#fff;opacity:0;transform:scale(.9);text-shadow:0 0 12px rgba(52,226,123,.85)}
+.btn.fx-ok .fx-done{opacity:1;transform:none;transition:opacity .35s .1s,transform .5s cubic-bezier(.34,1.56,.64,1) .1s}
+.btn.fx-ok .fx-trace{stroke:#34E27B;filter:drop-shadow(0 0 4px rgba(52,226,123,.95)) drop-shadow(0 0 14px rgba(52,226,123,.75))}
+.btn.fx-ok .fx-track{stroke:rgba(52,226,123,.35)}
+.btn.fx-on.fx-ok{box-shadow:0 0 0 1px rgba(52,226,123,.25),0 0 34px -4px rgba(52,226,123,.55),0 18px 40px -16px rgba(52,226,123,.6)}
+.fx-busy .fs-back{opacity:0;width:0;border-width:0;margin-right:-10px;pointer-events:none}
+.fx-busy .fs-steps{opacity:.55;pointer-events:none;transition:opacity .3s}
+.fx-busy .slip-progress{display:none}
+@media (prefers-reduced-motion:reduce){.fx-ico,.fx-road i{animation:none}}
+.fx-busy .v-progress{display:none}

@@ -35,4 +35,4 @@
 .on-ember .slip-progress{background:rgba(255,255,255,.25)}
 .slip-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--marigold),#FFD84D);border-radius:inherit;transition:width .2s linear}
 form.sending .slip-progress{opacity:1}
-form.sending .fs-steps,form.sending .fs-nav{opacity:.6;pointer-events:none}
+form.sending .fs-steps{opacity:.6;pointer-events:none}

@@ -24,7 +24,7 @@
   }, f => {
     const n = Math.max(1, +f.qty || 1);
     XA.wa(`Assalam o Alaikum, I'd like to order the Reading and Writing Handbooks.\n\nName: ${f.name}\nWhatsApp: ${f.phone}\nSets: ${n} (Rs ${(n * PRICE).toLocaleString("en-PK")})\n${pickup() ? `Pickup at: ${f.campus}` : `Delivery to: ${f.address}, ${f.city}`}`);
-    form.classList.add("sent");
+    (window.XA_FX ? XA_FX.play(form, "truck", "Order placed", 1700) : Promise.resolve()).then(() => form.classList.add("sent"));
   });
   document.getElementById("orderAgain").addEventListener("click", () => { form.reset(); form.classList.remove("sent"); sync(); });
 })();
