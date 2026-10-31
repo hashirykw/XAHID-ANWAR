@@ -162,13 +162,14 @@
 <section class="dash" id="dash" hidden aria-label="Student dashboard">
   <div class="dash-wrap">
     <aside class="dash-side">
-      <div class="me"><span class="avatar" id="avatar">A</span><div><b id="meName">Student</b><small id="meMeta">XA-0001</small></div></div>
+      <button class="me" type="button" id="meBtn" data-plain aria-label="Open your profile"><span class="avatar" id="avatar">A</span><span class="me-tx"><b id="meName">Student</b><small id="meMeta">XA-0001</small><em class="me-go">View profile</em></span></button>
       <nav class="dash-nav" aria-label="Portal sections">
         <button class="dn" data-v="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button>
         <button class="dn" data-v="notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg><span>Notes</span></button>
         <button class="dn" data-v="lectures"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg><span>Lectures</span></button>
         <button class="dn" data-v="papers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg><span>Papers</span></button>
         <button class="dn" data-v="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Results</span></button>
+        <button class="dn" data-v="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>Rank</span></button>
       </nav>
       <button class="signout" type="button" id="signOut" data-plain aria-label="Sign out of the portal">
         <span class="so-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg></span>
@@ -186,6 +187,7 @@
         <div class="home-grid">
           <article class="card next glass glass-ink"><span class="card-k">Next class</span><h3 id="nextTitle">Composition: building suspense</h3><p id="nextMeta">Tuesday, 6:00 pm · EVO Institute</p><a class="btn btn-bone btn-sm" href="#" data-go="lectures">Watch last class</a></article>
           <article class="card wait"><span class="card-k">Waiting for Sir</span><ul class="mini" id="waitList"></ul><a class="link-btn" href="/ai-checker#workspace">Check another answer</a></article>
+          <a class="card rankc" href="#" data-go="rank"><span class="card-k">Your position</span><div class="rank-mini" id="rankMini"></div></a>
           <article class="card skills"><span class="card-k">Your skills</span><div class="rings" id="rings"></div></article>
           <article class="card cont"><span class="card-k">Continue watching</span><div id="contBox"></div></article>
           <article class="card news"><span class="card-k">Announcements</span><ul class="ann" id="annList"></ul></article>
@@ -205,6 +207,33 @@
       <div class="view" data-view="papers" hidden>
         <div class="paper-list" id="paperList"></div>
         <a class="btn btn-line" href="/past-papers">Browse all past papers</a>
+      </div>
+
+      <div class="view" data-view="rank" hidden>
+        <article class="card rank-hero" id="rankHero"></article>
+        <article class="card stage-card" id="stageCard"></article>
+        <article class="card"><span class="card-k">Your position after each test</span><div id="posChart"></div></article>
+        <div class="lb-head"><h2>Leaderboard</h2><div class="filters" id="lbFilters"><button class="pill on" data-f="all">All of Sir's students</button><button class="pill" data-f="campus">My campus</button></div></div>
+        <ol class="lb" id="lbList"></ol>
+        <p class="muted lb-note">Ranked on the average of your approved tests. Other students show as first name and last initial only.</p>
+      </div>
+
+      <div class="view" data-view="profile" hidden>
+        <article class="card prof-hero">
+          <div class="prof-photo">
+            <span class="avatar avatar-xl" id="profAvatar">A</span>
+            <label class="prof-cam" for="photoIn" aria-label="Change profile photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></label>
+            <input type="file" id="photoIn" accept="image/*" hidden>
+          </div>
+          <div class="prof-id"><h2 id="profName">Student</h2><p id="profMeta" class="muted"></p><span class="stage-pill" id="profStage"></span></div>
+          <div class="prof-actions"><label class="btn btn-sm" for="photoIn">Change photo</label><button class="btn btn-line btn-sm" type="button" id="photoDel" data-plain hidden>Remove photo</button></div>
+          <p class="prof-msg" id="photoMsg" role="status"></p>
+        </article>
+        <div class="prof-stats" id="profStats"></div>
+        <article class="card"><span class="card-k">Your details</span><dl class="prof-dl" id="profDl"></dl><p class="muted prof-fix">Something wrong? <a href="https://wa.me/923112004967?text=Assalam%20o%20Alaikum%2C%20please%20update%20my%20portal%20details." target="_blank" rel="noopener">Ask Sir's team on WhatsApp</a></p></article>
+        <article class="card"><span class="card-k">Privacy</span>
+          <label class="switch"><input type="checkbox" id="lbShow" checked><span class="sw" aria-hidden="true"></span><span><b>Show me on the leaderboard</b><small>Turn off to hide your name from other students. You still see your own position.</small></span></label>
+        </article>
       </div>
 
       <div class="view" data-view="results" hidden>

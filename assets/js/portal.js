@@ -40,13 +40,97 @@
       ["narr", "Narrative: building suspense", "29 min", 0, TEST_VIDEO]
     ],
     papers: [["1123 May/June 2025 · Paper 1 Reading (12)", "Due Friday", "/past-papers?s=1123&y=2025&ss=s&c=12"], ["XA Practice Paper 1 · Reading", "Due next week", "/past-papers#practice"], ["1123 Oct/Nov 2024 · Paper 2 Writing (22)", "Done · 41/50", "/past-papers?s=1123&y=2024&ss=w&c=22"]],
+    /* preview profile details; these come from Sir's records once the backend is connected */
+    profile: { syllabus: "O Level English Language 1123", campus: "EVO Institute", batch: "Tue & Thu, 6:00 pm", joined: "2 Sep 2026", phone: "0300 ••• 4567", devices: "1 of 2 devices" },
+    /* your class position after each approved test (1 = top) */
+    positions: [18, 15, 12, 9, 5],
     results: [["Diagnostic", "2 Sep", 29, 1], ["Reading test 1", "16 Sep", 33, 1], ["Writing test 1", "30 Sep", 35, 1], ["Reading test 2", "14 Oct", 38, 1], ["Mock 1", "21 Oct", 41, 1], ["Writing test 2", "28 Oct", null, 0]]
   };
+
+  /* ---------- stages, rank and leaderboard ---------- */
+  const STAGES = [["Starter", 0, "#8A7F76"], ["Bronze", 50, "#B0703A"], ["Silver", 60, "#8E9AA6"], ["Gold", 70, "#D69A12"], ["Platinum", 80, "#4C7FA8"], ["Diamond", 90, "#6E4FD8"]];
+  const stageOf = pct => { let i = 0; STAGES.forEach((st, k) => { if (pct >= st[1]) i = k; }); return i; };
+  const myAvg = () => { const d = D.results.filter(r => r[2] != null && r[3]); return d.reduce((a, r) => a + r[2], 0) / d.length / 50 * 100; };
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  /* preview classmates: first name and last initial only */
+  const PEERS = (() => {
+    const fn = ["Hamza", "Zainab", "Ali", "Fatima", "Usman", "Hiba", "Rayyan", "Mahnoor", "Saad", "Anaya", "Daniyal", "Eman", "Taha", "Aiza", "Ibrahim", "Maryam", "Arham", "Sana", "Hassan", "Areeba", "Zayan", "Noor", "Faris", "Alishba", "Shayan", "Iqra", "Rohan", "Mehwish", "Abdullah", "Laiba", "Haris", "Dua", "Omer", "Rida", "Talha", "Kinza", "Moiz", "Amna", "Huzaifa", "Hania", "Bilal"];
+    const ln = "RKMSANQTFHZBDJ", camp = ["EVO Institute", "The Caspian Institute", "Success Institute", "Online batch", "MAX Academy", "Neogen", "The Professionals Core"];
+    const top = [86.4, 81.2, 77.6, 72.8];
+    return fn.map((n, i) => {
+      const avg = i < 4 ? top[i] : +(69.6 - (i - 4) * 0.82 - (i % 3) * 0.3).toFixed(1);
+      return { name: `${n} ${ln[(i * 5) % ln.length]}.`, campus: camp[(i * 3 + 1) % camp.length], avg, trend: [1, 0, -1, 1, 1, 0, -1][i % 7] };
+    });
+  })();
+  const lbHidden = () => { try { return localStorage.getItem("xa-lb-hide") === "1"; } catch (e) { return false; } };
+  function board(scope, s) {
+    const me = { me: true, name: s.name, campus: D.profile.campus, avg: +myAvg().toFixed(1), trend: 1 };
+    const list = PEERS.filter(p => scope === "all" || p.campus === me.campus).concat(me).sort((a, b) => b.avg - a.avg);
+    list.forEach((p, i) => p.pos = i + 1);
+    return { list, me: list.find(p => p.me) };
+  }
+  const posTxt = n => n + (n % 10 === 1 && n % 100 !== 11 ? "st" : n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : "th");
+  function renderRank(s) {
+    const avg = myAvg(), si = stageOf(avg), st = STAGES[si], nx = STAGES[si + 1];
+    const all = board("all", s), mine = board("campus", s), P = D.positions, moved = P[P.length - 2] - P[P.length - 1];
+    const pill = `<span class="stage-pill" style="--sc:${st[2]}"><i></i>${st[0]} stage</span>`;
+    document.getElementById("rankMini").innerHTML = `<b class="rk-big">#${all.me.pos}</b><span class="muted">of ${all.list.length} students</span>${pill}<small class="${moved >= 0 ? "up" : "down"}">${moved > 0 ? "▲ Up " + moved + " places" : moved < 0 ? "▼ Down " + -moved + " places" : "Same place"} since the last test</small>`;
+    document.getElementById("rankHero").innerHTML = `<span class="card-k">Your position</span>
+      <div class="rk-row"><div class="rk-cell"><b class="rk-big">${posTxt(all.me.pos)}</b><small>of ${all.list.length} of Sir's students</small></div>
+      <div class="rk-cell"><b class="rk-big">${posTxt(mine.me.pos)}</b><small>of ${mine.list.length} at ${esc(D.profile.campus)}</small></div>
+      <div class="rk-cell"><b class="rk-big">${Math.round(avg)}%</b><small>your average</small></div></div>
+      <p class="rk-move ${moved >= 0 ? "up" : "down"}">${moved > 0 ? `▲ You climbed ${moved} places after ${esc(D.results.filter(r => r[3]).slice(-1)[0][0])}.` : moved < 0 ? `▼ You dropped ${-moved} places. One strong test pulls you back up.` : "You held your place."} Top ${Math.max(1, Math.round(all.me.pos / all.list.length * 100))}% of the class.</p>`;
+    const span = nx ? nx[1] - st[1] : 10, into = Math.min(100, (avg - st[1]) / span * 100);
+    document.getElementById("stageCard").innerHTML = `<span class="card-k">Your stage</span>
+      <div class="stages">${STAGES.map((x, k) => `<span class="stg${k === si ? " on" : k < si ? " done" : ""}" style="--sc:${x[2]}"><i></i><b>${x[0]}</b><small>${x[1]}%+</small></span>`).join("")}</div>
+      ${nx ? `<div class="stg-bar"><i style="--w:${into.toFixed(0)}%;--sc:${st[2]}"></i></div><p class="muted">${(nx[1] - avg).toFixed(1)}% more to reach <b style="color:${nx[2]}">${nx[0]}</b>. Average ${Math.ceil(nx[1] / 2)}/50 or more in your next tests to move up.</p>` : `<p class="muted">Top stage. Keep it here.</p>`}`;
+    posChart(); renderBoard(document.querySelector("#lbFilters .pill.on").dataset.f, s);
+  }
+  function renderBoard(scope, s) {
+    const { list, me } = board(scope, s), hide = lbHidden();
+    let rows = list.slice(0, 10);
+    if (me.pos > 10) rows = rows.concat([{ gap: true }], list.slice(me.pos - 2, me.pos + 1));
+    const medal = n => n <= 3 ? `<span class="medal m${n}">${n}</span>` : `<span class="lb-n">${n}</span>`;
+    document.getElementById("lbList").innerHTML = rows.map(p => p.gap ? `<li class="lb-gap" aria-hidden="true">···</li>` :
+      `<li class="lb-row${p.me ? " me" : ""}">${medal(p.pos)}<span class="avatar avatar-sm${p.me ? " me-av" : ""}">${esc(p.name.trim()[0])}</span><span class="lb-who"><b>${p.me ? "You" + (hide ? " (hidden from others)" : "") : esc(p.name)}</b><small>${esc(p.campus)}</small></span><span class="lb-avg">${Math.round(p.avg)}%</span><span class="tr ${p.trend > 0 ? "up" : p.trend < 0 ? "down" : ""}" aria-label="${p.trend > 0 ? "moving up" : p.trend < 0 ? "moving down" : "steady"}">${p.trend > 0 ? "▲" : p.trend < 0 ? "▼" : "–"}</span></li>`).join("");
+    paintAvatars(s);
+  }
+  function posChart() {
+    const done = D.results.filter(r => r[3]), P = D.positions, narrow = innerWidth < 600, W = narrow ? 340 : 640, H = 200, px = 34, py = 26;
+    const max = Math.max(...P) + 2, x = i => px + i * ((W - px * 2) / (P.length - 1)), y = v => py + (v - 1) / (max - 1) * (H - py * 2);
+    const line = P.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+    const dots = P.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="${i === P.length - 1 ? 7 : 5}" fill="${i === P.length - 1 ? "#D9440F" : "#1A1410"}"/><text x="${x(i)}" y="${y(v) - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1410">${posTxt(v)}</text><text x="${x(i)}" y="${H - 4}" text-anchor="middle" font-size="10.5" fill="#6B5F55">${done[i] ? done[i][1] : ""}</text>`).join("");
+    document.getElementById("posChart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Class position from ${posTxt(P[0])} to ${posTxt(P[P.length - 1])}" font-family="Onest, sans-serif"><text x="4" y="${py + 4}" font-size="10" fill="#6B5F55">1st</text><path d="${line}" fill="none" stroke="#D9440F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}</svg>`;
+  }
+
+  /* ---------- profile and photo (saved on this device until the backend stores it) ---------- */
+  const photoKey = s => "xa-photo:" + s.id;
+  const getPhoto = s => { try { return localStorage.getItem(photoKey(s)); } catch (e) { return null; } };
+  function paintAvatars(s) {
+    const ph = getPhoto(s), letter = s.name.trim()[0].toUpperCase();
+    document.querySelectorAll("#avatar, #profAvatar, .me-av").forEach(el => {
+      el.classList.toggle("has-photo", !!ph);
+      el.style.backgroundImage = ph ? `url("${ph}")` : "";
+      el.textContent = ph ? "" : letter;
+    });
+    const del = document.getElementById("photoDel"); if (del) del.hidden = !ph;
+  }
+  function renderProfile(s) {
+    const avg = myAvg(), st = STAGES[stageOf(avg)], all = board("all", s), done = D.results.filter(r => r[3]);
+    document.getElementById("profName").textContent = s.name;
+    document.getElementById("profMeta").textContent = `${s.id} · ${D.profile.syllabus}`;
+    const sp = document.getElementById("profStage"); sp.style.setProperty("--sc", st[2]); sp.innerHTML = `<i></i>${st[0]} stage`;
+    document.getElementById("profStats").innerHTML = [[done.length, "tests marked"], [Math.round(avg) + "%", "average"], [Math.max(...done.map(r => r[2])) + "/50", "best mark"], ["#" + all.me.pos, "class position"]].map(x => `<div class="card pst"><b>${x[0]}</b><small>${x[1]}</small></div>`).join("");
+    const P = D.profile;
+    document.getElementById("profDl").innerHTML = [["Student ID", s.id], ["Syllabus", P.syllabus], ["Campus", P.campus], ["Batch", P.batch], ["WhatsApp", P.phone], ["Joined", P.joined], ["Signed in on", P.devices]].map(r => `<div><dt>${r[0]}</dt><dd>${esc(r[1])}</dd></div>`).join("");
+    document.getElementById("lbShow").checked = !lbHidden();
+    paintAvatars(s);
+  }
 
   function render(s) {
     document.getElementById("meName").textContent = s.name;
     document.getElementById("meMeta").textContent = `${s.id} · O Level 1123`;
-    document.getElementById("avatar").textContent = s.name.trim()[0].toUpperCase();
+    paintAvatars(s); renderRank(s); renderProfile(s);
     const h = new Date().getHours();
     document.getElementById("hello").textContent = `${h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"}, ${s.name.split(" ")[0]}`;
     document.getElementById("today").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
@@ -98,6 +182,7 @@
     document.querySelectorAll(".dn").forEach(b => { if (b.dataset.v === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     document.querySelectorAll(".view").forEach(x => x.hidden = x.dataset.view !== v);
     if (v === "results") chart();
+    if (v === "rank") posChart();
     if (innerWidth < 1000) scrollTo({ top: 0, behavior: XA.reduce ? "auto" : "smooth" });
   }
   document.querySelectorAll(".dn").forEach(b => b.addEventListener("click", () => go(b.dataset.v)));
@@ -190,6 +275,36 @@
   document.querySelectorAll(".shield").forEach(sh => sh.addEventListener("click", e => { e.stopPropagation(); if (!document.hidden) shield(false); }));
   document.addEventListener("copy", e => { if (guarded().length) e.preventDefault(); });
   document.addEventListener("dragstart", e => { if (e.target.closest && e.target.closest("#reader, #player")) e.preventDefault(); });
+
+  document.getElementById("meBtn").addEventListener("click", () => go("profile"));
+  document.getElementById("lbFilters").addEventListener("click", e => {
+    const b = e.target.closest(".pill"); if (!b) return;
+    document.querySelectorAll("#lbFilters .pill").forEach(p => p.classList.toggle("on", p === b)); renderBoard(b.dataset.f, get());
+  });
+  document.getElementById("lbShow").addEventListener("change", e => {
+    try { localStorage.setItem("xa-lb-hide", e.target.checked ? "0" : "1"); } catch (er) {}
+    renderBoard(document.querySelector("#lbFilters .pill.on").dataset.f, get());
+  });
+  const photoMsg = t => { const m = document.getElementById("photoMsg"); m.textContent = t; clearTimeout(m._t); m._t = setTimeout(() => m.textContent = "", 4000); };
+  document.getElementById("photoIn").addEventListener("change", e => {
+    const f = e.target.files && e.target.files[0], s = get(); e.target.value = "";
+    if (!f || !s) return;
+    if (!/^image\//.test(f.type)) { XA.sfx.error(); return photoMsg("Pick a photo (JPG or PNG)."); }
+    if (f.size > 15 * 1024 * 1024) { XA.sfx.error(); return photoMsg("That photo is too big. Pick one under 15 MB."); }
+    const url = URL.createObjectURL(f), img = new Image();
+    img.onload = () => {
+      /* square crop from the centre, shrunk to 320 px so it loads instantly */
+      const n = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement("canvas"); c.width = c.height = 320;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - n) / 2, (img.naturalHeight - n) / 2, n, n, 0, 0, 320, 320);
+      URL.revokeObjectURL(url);
+      try { localStorage.setItem(photoKey(s), c.toDataURL("image/jpeg", .86)); XA.sfx.success(); photoMsg("Profile photo updated."); }
+      catch (er) { XA.sfx.error(); photoMsg("Couldn't save the photo on this phone. Try a smaller one."); }
+      paintAvatars(s);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); XA.sfx.error(); photoMsg("That file couldn't be opened. Try another photo."); };
+    img.src = url;
+  });
+  document.getElementById("photoDel").addEventListener("click", () => { const s = get(); if (!s) return; try { localStorage.removeItem(photoKey(s)); } catch (e) {} paintAvatars(s); photoMsg("Photo removed."); });
 
   /* password show / hide */
   const pwEye = document.getElementById("pwEye"), pwIn = document.getElementById("l-pw");

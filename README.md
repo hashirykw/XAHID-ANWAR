@@ -45,6 +45,7 @@ All paths inside the site are root-relative (`/assets/...`, `/books`), so every 
 - Timed-mode exit phrase and Sir's override key: `PHRASE` and `MAGIC` in `assets/js/papers.js`
 - Past-paper source: `SRC` in `assets/js/papers.js`
 - Portal topics, notes and lectures: `topics`, `notes`, `lectures` in `assets/js/portal.js`. Topics are listed in syllabus order and notes and lectures are shown grouped topic by topic in that order
+- Portal profile and rank: `profile`, `positions` and the classmates list `PEERS` in `assets/js/portal.js` are preview data. Stages (`STAGES`: Starter, Bronze 50%+, Silver 60%+, Gold 70%+, Platinum 80%+, Diamond 90%+) come from the average of approved tests. Profile photos are cropped to 320 px and kept on the device until Supabase storage is connected
 - Course material protection (portal): notes and lectures black out when the app goes to the background, loses focus, or a screenshot or print shortcut is pressed; the student ID drifts across the lecture video the whole time it is open. A browser cannot stop a phone's own screenshot buttons, so the ID watermark is what traces a leaked copy
 
 Portal sign-in, AI marking and student data are front end only until the backend (Supabase + a server function for the AI) is connected.
