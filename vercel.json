@@ -3,6 +3,28 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "xahid-anwar.nexlyr.solutions"
+        }
+      ],
+      "destination": "https://englishwithsxa.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.englishwithsxa.com"
+        }
+      ],
+      "destination": "https://englishwithsxa.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true

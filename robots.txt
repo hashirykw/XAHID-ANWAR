@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /practice/
 
-Sitemap: https://xahid-anwar.nexlyr.solutions/sitemap.xml
+Sitemap: https://englishwithsxa.com/sitemap.xml
